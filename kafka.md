@@ -9,15 +9,15 @@
     +  存储系统：持久化到磁盘，相对比其他基于内存存储的系统而言，有效降低数据丢失的风险；可把 Kafka 作长期数据存储系统使用，只需把对应的数据保留策略设置为“永久”或启用主题的日志压缩功能；
     +  流式处理平台：不仅为每个流行的流式处理框架提供可靠的数据来源，还提供了一个完整的流式处理类库；
     
-1.1  基本概念
+#### 1.1  基本概念
 +  一个典型的 Kafka 体系架构包括若干 Producer 、 若干 Broker 、 若干 Consumer 以及一个 ZooKeeper 集群；
     +  ZooKeeper ： 是 Kafka 用来负责集群元数据的管理、控制器的选举等操作；
     +  Producer ： 将消息发送给 Broker；
     +  Broker ： 负责将接收到的消息存储到磁盘中；
     +  Consumer ： 负责从 Broker 订阅并消费信息；
     
-    ![Kafka 体系结构](./src/main/resources/kafka/architecture.png)
-    Kafka 体系结构
+![Kafka 体系结构](./src/main/resources/kafka/architecture.png)
+Kafka 体系结构
 
 +  Kafka 术语：
     +  Producer ： 生产者，发送消息的一方；负责创建消息，然后将其投到 Kafka 中；
@@ -37,7 +37,7 @@
             +  offset 仅在分区内有效； -> Kafka 保证分区有序而不是主题有序；
     
     
-1.2 123
+#### 1.2 安装与配置
 
 ### 2.生产者
 
