@@ -130,7 +130,8 @@ bin/kafka-console-producer.sh --broker-list localhost:9092 --topic topic-demo
 
 kafka 的实用脚本工具
 
-[kafka-demo]()
+[kafka-producer-demo](./src/main/java/kafkaQuickStart/ProducerFastStart.java)
+[kafka-consumer-demo](./src/main/java/kafkaQuickStart/ConsumerFastStart.java)
 
 ### 2.生产者
 
