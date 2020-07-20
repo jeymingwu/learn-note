@@ -3,11 +3,14 @@
 ## 1. JDK 的安装与配置
 
 1.1. 下载 JDK 1.8 安装包；示例： jdk-8u181-linux-x64.tar.gz
+
 1.2. 解压安装包；示例：tar zxvf jdk-8u181-linux-x64.tar.gz (解压后生成 jdk1.8.0_181 文件夹)
+
 1.3  环境配置：
-    +  修改/etc/profile文件；
-    +  修改完成后执行： source /etc/profile 命令使配置生效；
-    +  通过 java –version 命令： 验证 JDK 是否已经安装配置成功
++  修改/etc/profile文件；
++  修改完成后执行： source /etc/profile 命令使配置生效；
++  通过 java –version 命令： 验证 JDK 是否已经安装配置成功
+    
 ```
 export JAVA_HOME=/opt/jdk1.8.0_181
 export JRE_HOME=$JAVA_HOME/jre
@@ -18,17 +21,20 @@ export CLASSPATH=./://$JAVA_HOME/lib:$JRE_HOME/lib
 ## 2. ZooKeeper 的安装与配置
 
 2.1  ZooKeeper：Kafka 集群的必要组件；实施对元数据信息的管理（包括集群、broker、主题、分区等内容）；
+
 2.2  ZooKeeper：开源分布式协调服务；分布式应用程序可以基于 ZooKeeper 实现诸如数据发布\订阅、负载均衡、命名服务、分布式协调\通知、集群管理、Master 选举、 配置维护等功能；
+
 2.3  ZooKeeper： 三个角色：leader、follower 和 observer；   
-    +  observer： 不参与投票；
-    +  默认情况下只有 leader 和 follower ；
++  observer： 不参与投票；
++  默认情况下只有 leader 和 follower ；
+    
 2.4 安装步骤：
-    +  下载安装包；示例：zookeeper-3.4.12.tar.gz
-    +  解压安装包；
-    +  环境配置：
-        +  修改/etc/profile文件；
-        +  修改完成后执行： source /etc/profile 命令使配置生效；
-        +  修改 ZooKeeper 的配置文件：进入$ZOOKEEPER_HOME/conf 目录，并将 zoo_sample.cfg 文件修改为 zoo.cfg：
++  下载安装包；示例：zookeeper-3.4.12.tar.gz
++  解压安装包；
++  环境配置：
+    +  修改/etc/profile文件；
+    +  修改完成后执行： source /etc/profile 命令使配置生效；
+    +  修改 ZooKeeper 的配置文件：进入$ZOOKEEPER_HOME/conf 目录，并将 zoo_sample.cfg 文件修改为 zoo.cfg；
 
 ```
 // 1.修改/etc/profile文件，修改后 source /etc/profile 命令使配置生效
@@ -89,11 +95,13 @@ server.2=192.168.0.4:2888:3888
 ## 3. kafka 的安装与配置
 
 3.1. 下载 Kafka broker 安装包；示例： kafka_2.11-2.0.0.tgz
-1.2. 解压安装包；
-1.3  环境配置：
-    +  修改/etc/profile文件；
-    +  修改完成后执行： source /etc/profile 命令使配置生效；
-    +  修改配置成功
+
+3.2. 解压安装包；
+
+3.3  环境配置：
++  修改/etc/profile文件；
++  修改完成后执行： source /etc/profile 命令使配置生效；
++  修改配置
     
 ```
 // 1.修改/etc/profile文件，修改后 source /etc/profile 命令使配置生效
