@@ -17,6 +17,7 @@
     +  Consumer ： 负责从 Broker 订阅并消费信息；
     
 ![Kafka 体系结构](./src/main/resources/kafka/architecture.png)
+
 Kafka 体系结构
 
 +  Kafka 术语：
@@ -61,6 +62,7 @@ Kafka 体系结构
             
     +  Kafka 消费端的容灾能力：Consumer 使用拉（pull）模式用服务器拉取消息，并且保存消费的具体位置；若消费者宕机后恢复上线时可根据之前保存的消费位置重新拉取需要的消息进行消费；
 ![Kafka 多副本架构](./src/main/resources/kafka/multiple-copy-mechanism.png)
+
 Kafka 多副本架构
     
 +  Kafka 多副本架构说明（例子）
@@ -70,6 +72,7 @@ Kafka 多副本架构
         +  滞后范围可通过参数进行配置；
         
 ![分区中各种偏移量的说明](./src/main/resources/kafka/partition-offset.png)
+
 分区中各种偏移量的说明
 
 +  分区中各种偏移量的说明
@@ -90,6 +93,44 @@ Kafka 多副本架构
 [kafka安装与配置](./kafka-install.md)
 
 #### 1.3 生产与消费
+
++  生产者将消息发送至 Kafka 的主题的分区中，而消费者也通过订阅主题从而消费信息；
++  演示前需要创建一个主题作为消息的载体；
++  在 $KAFKA_HOME/bin 目录下，kafka 提供许多实用脚本工具；
+    +  kafka-topics.sh ： 与主题有关；
+    +  kafka-console-producer.sh : 与发送消息有关；
+    +  kafka-console-consumer.sh : 与消费消息有关；
+
+```
+// 创建一个分区数为4，副本因子为3的主题 topic-demo
+bin/kafka-topics.sh --zookeeper localhost:2181/kafka --create --topic topic-demo --replication-factor 3 --partitions 4
+
+// --zookeeper: Kafka 所连接的 ZooKeeper 服务地址
+// --topic : 创建主题的名称
+// --replication-factor : 副本因子
+// --partitions : 分区个数
+// --create ： 创建主题的动作指令
+
+// 通过 --describe 展示主题的更多具体信息
+bin/kafka-topics.sh --zookeeper localhost:2181/kafka --describe --topic topic-demo
+
+// 通过 kafka-console-consumer.sh 脚本来订阅主题 topic-demo
+bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic topic-demo
+
+// --bootstrap-server : 连接 Kafka 集群地址
+// --topic : 指定了消费者订阅的主题
+
+// 通过 kafka-console-producer.sh 脚本来发送消息 topic-demo
+bin/kafka-console-producer.sh --broker-list localhost:9092 --topic topic-demo
+// --broker-list : 连接 Kafka 集群地址
+// --topic ： 发送消息的主题
+```
+
+![kafka 的实用脚本工具](./src/main/resources/kafka/kafka-script.png)
+
+kafka 的实用脚本工具
+
+[kafka-demo]()
 
 ### 2.生产者
 
