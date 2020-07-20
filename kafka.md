@@ -131,7 +131,44 @@ bin/kafka-console-producer.sh --broker-list localhost:9092 --topic topic-demo
 kafka 的实用脚本工具
 
 [kafka-producer-demo](./src/main/java/kafkaQuickStart/ProducerFastStart.java)
+
 [kafka-consumer-demo](./src/main/java/kafkaQuickStart/ConsumerFastStart.java)
+
+#### 1.4 服务端参数配置 
++  参数配置在：$KAFKA_HOME/config/server.properties
++  zookeeper.connect：broker 连接 zookeeper 集群的服务地址(包含端口号)，没有默认值，必填项；
+    +  格式：localhost1:2181, localhost2:2181, localhost3:2181;
+    +  若 Zookeeper 集群有多个节点，可用逗号将每个节点隔开；
+    +  最佳的实践方式：再加一个 chroot 路径（不加默认使用根路径），既可明确该 chroot 路径下的节点为 Kafka 所用，也可实现多个 Kafka 集群复用一套 ZooKeeper 集群；
++  listeners：broker 监听客户端连接的地址列表；
+    +  格式：protocol1://hostname1:port1, protocol2://hostname2:port2；
+        +  协议：
+            +  protocol：表示协议类型；
+            +  Kafka 还支持的协议类型： PLAINTEXT、SSL、SASL_SSL等；
+            +  若未开启安全认证：可用简单的 PLAINTEXT;
+        +  hostname：主机名
+            +  若不指定主机名，则表示绑定默认网卡；有可能会绑定到 127.0.0.1，这时就无法对外提供服务；
+            +  若主机名为 0.0.0.0 , 则表示绑定所有网卡;
+            +  关联参数：
+                +  advertised.listeners：
+                    +  作用与 listeners 类似，默认为 null；
+                    +  主要用于 IaaS (Infrastructure as a Service) 环境（公有云上机器通常包含有私网网卡和公网网卡等多块网卡）；
+                        +  advertised.listeners ：绑定公网 IP 供外部客户端使用；
+                        +  listeners ： 绑定私网 IP 地址供 broker 间通信使用；
+        +  port：端口号；（默认9092）
++  broker.id：指定 Kafka 集群中 broker 的唯一标识，默认值为-1；
+    +  若没有设置，那么 Kafka 会自动生成一个；
+    +  与 meta.properties 文件及服务端参数 broker.id.generation.enable 和 reserved.broker.max.id 有关；
++  log.dir 和 log.dirs：配置 Kafka 日志文件存放的根目录；
+    +  log.dir 配置单个根目录；
+    +  log.dirs 配置多个根目录（以逗号分隔）；
+    +  Kafka 没有强制性限制，都可以配置单个或多个根目录；
+    +  log.dirs 的优先级比 log.dir 高；
++  message.max.bytes：指定 broker 所能接收消息的最大值，默认值为 1000012（B），约等于 976.6KB；
+    +  若 Producer 发送的消息大于此值，那么会抛出 RecordTooLargeException 异常；
+    +  若修改需考虑  max.request.size（客户端参数）、max.message.bytes（topic 端参数）等参数的影响；
++  unclean.leader.election.enable
++  log.segment.bytes
 
 ### 2.生产者
 
