@@ -57,7 +57,99 @@
     +  测试 
 
 ### 2.装配 Bean
-
++  **自动化装配 bean** （隐式装配）
+    +  两个角度来实现 ——> 较少显示配置
+        +  组件扫描（component scanning）：Spring 会自动发现应用上下文中所创建的 bean；
+            +  注解开启：@ComponentScan
+            +  XML 配置开启：Spring context 命名空间的 <context:component-scan base-package="*">
+        +  自动装配（autowiring）：Spring 自动满足 bean 之间的依赖；
+    +  注解：
+        +  @ComponentScan：启动组件扫描（默认不启用）
+            +  默认会扫描与配置类相同的包；
+            +  指定基础包：@ComponentScan("package") 或 @ComponentScan(basePackages="package")
+            +  若多个基础包：@ComponentScan(basePackages = {"package1", "package2"})
+                +  基础包 String 类型 ——> 类型不安全
+                +  基础包指定所包含的类或接口：@ComponentScan(basePckageClasses = {AClass.class, BClass.class})
+        +  @Component：创建 bean
+            +  默认ID：类名（第一个字母变小写）；
+            +  指定：@Component("name");
+            +  使用 Java 依赖注入范式中 @Named 注解来设置；（Spring 支持将 @Named 作 @Component 的替代）
+        +  @Autowired: 自动装配
+            +  成员变量
+            +  构造函数
+            +  成员变量的 set 函数
+            +  其他方法
+            +  @Autowired(required = false)：Spring 会尝试执行自动装配，若没有匹配，则这个 bean 处于未装配的状态；
+            +  @Inject : 源于Java 依赖注入规范，可替换@Autowired；
++  **通过 Java 代码装配 bean** （显式装配）
+    +  @Configuration：表明这类是一个配置类；
+    +  @Bean：使用方法创建实例，方法添加 @Bean 注解，该实例对象要注册为 Spring 应用上下文中的 bean；
+        +  默认情况下，bean 的 ID 与 带 @Bean 注解的方法名一样；
+        +  可指定 bean 的 ID：@Bean(name = "bean")
++  **通过 XML 装配 bean** （显示装配）
+    +  借助 Spring Tool Suite 创建 XML 配置文件：[URL](https://spring.io/tools/sts)
+    +  bean 的声明：<bean class="package.Demo" />（类似 @Bean）
+        +  默认 ID ： 会根据全限定类名来命名；（例：package.Demo#0）
+        +  可指定ID ： <bean id="demo" class="package.Demo" />
+        +  Spring 会调用 Demo 的默认构造器来创建 bean；
+    +  借助构造器注入初始化 bean 
+        +  **强依赖**使用构造器注入；
+        +  <constructor-arg ref="" /> 或 <constructor-arg value="" /> 元素
+        +  使用 Spring 3.0 所引入的 c-命名空间
+            +  需在 XML 顶部声明其模式： xmlns:c="http://www.springframework.org/schema/c"
+            +  <bean id="" class="" c:name-ref="" />
+                +  c:cd-ref=""
+                    +  c : 命名空间前缀
+                    +  name : 构造器参数名（可直接用参数列表的位置信息：“_0”，若只有一个参数：“_”）
+                    +  -ref : 注入 bean 应用
+                    +  "" : 要注入 bean 的 ID
+            +  <bean id="" class="" c:_value="" />
+                +  c:_value : 为成员变量 value 赋值
+                +  c:_0 : 可使用位置信息替换参数名
+                +  c:_ : 若仅有一个参数可省略
+        +  若构造器参数为集合时：(c-命名空间无法实现)
+            +  可设置为null : <null />
+            +  List：
+                +  基本元素：<list><value>value1</value><value>value2</value></list>
+                +  bean 引用：<list><ref bean="bean1"/><ref bean="bean2"/></list>
+            +  Set : <set></set>
+    +  属性注入初始化 bean
+        +  **可选性依赖**使用属性注入；
+        +  <bean id="" class=""><property name="" value=""/></bean> 或 <bean id="" class=""><property name="" ref=""/></bean>
+        +  p-命名空间
+            +  需在 XML 顶部声明其模式： xmlns:p="http://www.springframework.org/schema/p"
+            +  与 c-命名空间差不多
+        +  util-命名空间
+            +  需在 XML 顶部声明其模式： xmlns:util="http://www.springframework.org/schema/util"
+            +  定义：<util:list id="list"><value>value</value></util:list>
+            +  引用：<bean id="" class="" p:listName-ref="list"/>
+            +  util:constant ： 引用某个类型的公有静态域，并将其暴露为 bean；
+            +  util:list ： 创建一个 List 的 bean
+            +  util:map ： 创建一个 Map 的 bean
+            +  util:properties ： 创建一个 Properties 的 bean
+            +  util:property-path ： 引用一个 bean 属性（或内嵌属性），并将其暴露为 bean
+            +  util:set ： 创建一个 Set 的 bean
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/mvc 
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd  ">
+    
+</beans>
+```     
++  **导入和混合配置**
+    +  在 JavaConfig 中引用 XML 配置
+        +  @Import
+        +  @ImportResource
+    +  在 XML 配置中引用 JavaConfig 配置
+    
 ### 3.高级装配
 
 ### 4.面向切面
