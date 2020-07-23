@@ -151,6 +151,50 @@
     +  在 XML 配置中引用 JavaConfig 配置
     
 ### 3.高级装配
++  环境与 profile
+    +  应用程序用一个开发环境迁移到生产环境；数据库配置、加密算法以及外部系统的集成等；
+    +  配置 profile bean
+        +  @Profile ： 指定某个 bean 属于哪个 profile；
+            +  Spring 3.1及以上可在类级别上使用；
+            +  Spring 3.2及以上可在方法级别上使用；
+        +  在 XML 配置文件中配置 profile
+            +  在根 <beans></beans> 元素中添加 profile=""
+            +  在根 <beans></beans> 元素中嵌套 <beans profile=""></beans>
+    +  激活 profile
+        +  spring.profiles.active ： 若设置该属性，那么该值为激活的 profile；
+        +  spring.profiles.default ： 若 spring.profiles.active 没有设置，则该值为激活的 profile；
+        +  若两者均没有设置，则就没有激活 profile ，因此只创建没有定义在 profile 的 bean；
+        +  设置两值的方式：
+            +  作为 DispatcherServlet 的初始化参数；(如下图所示)
+            +  作为 Web 应用的上下文参数；
+            +  作为 JNDI 条目；
+            +  作为环境变量；
+            +  作为 JVM 的系统属性；
+            +  在集成测试类是哪个，使用 @ActiveProfiles 注解设置；
+    +  使用 profile 进行测试
+        +  @ActiveProfiles 注解
+        +  Spring 4.0 的 @Conditional 注解
+        
+![profile 作为 DispatcherServlet 的初始化参数](../spring-in-action-4th/img/spring-profile-dispatcherServlet.png)  
+<div style="text-align: center;">profile 作为 DispatcherServlet 的初始化参数</div>
+
+```java
+/* 使用 profile 进行测试 */ 
+@RunWith(SpringJUnit4ClassRunner.class) 
+@ContextConfiguration(classes ={PersistenceTestConfig.class}) 
+@ActiveProfiles("dev") 
+public class PersistenceTest {
+
+}
+```
+
++  条件化的 bean
+
++  处理自动化装配的歧义性
+
++  bean 的作用域
+
++  运行时值注入
 
 ### 4.面向切面
 
