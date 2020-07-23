@@ -188,7 +188,25 @@ public class PersistenceTest {
 }
 ```
 
-+  条件化的 bean
++  条件化的 bean ： @Conditional
+    +  某些 bean 只有在应用的类路径下包含特定的库才创建；
+    +  某些 bean 只有当某个特定的 bean 声明了才创建；
+    +  某个特定环境变量设置后才创建某个 bean；
+    +  @Conditional 类实现了 Condition 接口类型，其中需要实现 matches(ConditionContext, AnnotatedTypeMetadata) 方法；
+        +  若 matches(ConditionContext, AnnotatedTypeMetadata) 返回 true ， 则 bean 创建；
+        +  若 matches(ConditionContext, AnnotatedTypeMetadata) 返回 false ， 则 bean 不创建；
+        +  ConditionContext : 接口
+            +  BeanDefinitionRegistry getRegistry(); // 检查 bean 定义
+            +  ConfigurableListableBeanFactory getBeanFactory();  // 检查 bean 是否存在
+            +  Environment getEnvironment();  // 检查环境变量是否存在以及其值是什么
+            +  ResourceLoader getResourceLoader();  // 检查所加载的资源
+            +  ClassLoader getClassLoader(); // 检查某类是否存在
+        +  AnnotatedTypeMetadata ： 接口
+            +  boolean isAnnotated(String annotationType); // 判断带 @Bean 注解的方法是不是还有其他特定的注解；
+            +  Map<String, Object> getAnnotationAttributes(String annotationType); 
+            +  Map<String, Object> getAnnotationAttributes(String annotationType, boolean classValuesAsString); 
+            +  MultiValueMap<String, Object> getAllAnnotationAttributes(String annotationType);
+            +  MultiValueMap<String, Object> getAllAnnotationAttributes(String annotationType, boolean classValuesAsString);
 
 +  处理自动化装配的歧义性
 
