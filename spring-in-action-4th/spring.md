@@ -209,7 +209,15 @@ public class PersistenceTest {
             +  MultiValueMap<String, Object> getAllAnnotationAttributes(String annotationType, boolean classValuesAsString);
 
 +  处理自动化装配的歧义性
-
+    +  自动装配 ——> 一个 bean 匹配时才有效；若多个匹配，则出现歧义性，spring 抛出 NoUniqueBeanDefinitionException 异常；
+    +  多种解决歧义性的方案：
+        +  标示首选（primary）的 bean ： @Primary
+        +  使用限定符（qualifier）：限定自动装配的 bean
+            +  @Qualifier : 注入时指定要注入的 bean，依赖 bean ID 作为限定符；
+                +  @Qualifier 与 @Autowired 连用，限定注入；
+            +  创建自定义的限定符 ： @Qualifier 与 @Component 连用，自定义限定符；
+            +  使用自定义的限定符注解 ： 
+            
 +  bean 的作用域
 
 +  运行时值注入
