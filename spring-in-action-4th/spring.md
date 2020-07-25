@@ -216,9 +216,46 @@ public class PersistenceTest {
             +  @Qualifier : 注入时指定要注入的 bean，依赖 bean ID 作为限定符；
                 +  @Qualifier 与 @Autowired 连用，限定注入；
             +  创建自定义的限定符 ： @Qualifier 与 @Component 连用，自定义限定符；
-            +  使用自定义的限定符注解 ： 
+            +  使用自定义的限定符注解
+            
+```java
+// 使用自定义的限定符注解
+@Target({ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.METHOD, ElementType.TYPE}) 
+@Retention(RetentionPolicy.RUNTIME) 
+@Qualifier 
+public @interface Cold { 
+
+}
+
+```
             
 +  bean 的作用域
+    +  默认情况下，Spring 应用上下文中所有 bean 都是以单例的形式创建的；
+    +  Spring 多种定义域：
+        +  单例（Singleton）：在整个应用中， bean 只创建一个实例；
+        +  原型（Prototype）：每次注入或者通过 Spring 应用上下文获取时，都创建一个新的 bean 实例；
+        +  会话（Session）：在 Web 应用中，为每个会话创建一个 bean 实例；
+        +  请求（Request）：在 Web 应用中，为每个请求创建一个 bean 实例；
+    +  @Scope ： 默认单例，选择其他作用域；可与 @Component 或 @Bean 一起；
+    +  使用会话和请求作用域：
+        +  proxyMode ： 解决了将会话或请求作用域的 bean 注入到单例 bean 中的问题；
+            +  proxyMode = ScopedProxyMode.INTERFACES : 代理要实现的是接口
+            +  proxyMode = ScopedProxyMode.TARGET_CLASS : 代理要实现的类（使用CGLib生成基于类的代理）
+    +  在 XML 中声明作用域代理
+        +  要设置代理模式，需要使用 Spring aop 命名空间；
+        +  <aop:scoped-proxy />
+            +  默认情况下，以 CGLib 创建目标类的代理；
+            +  指定生成基于接口的代理 ： <aop:scoped-proxy proxy-target-class="false" />
+![作用域代理能够延迟注入请求和会话作用域的 bean](../spring-in-action-4th/img/bean-scope-proxy.png)  
+<div style="text-align: center;">作用域代理能够延迟注入请求和会话作用域的 bean 的初始化参数</div>
+
+```
+// 在 XML 中声明作用域代理
+<bean id="demo" class="demo" scope="session">
+    <aop:scoped-proxy/>
+</bean>
+
+```
 
 +  运行时值注入
 
