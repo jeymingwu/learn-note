@@ -258,7 +258,58 @@ public @interface Cold {
 ```
 
 +  运行时值注入
-
+    +  属性占位符
+        +  声明属性源并通过 Spring 的 Environment 来检索属性；
+            +  声明属性源 ： @PropertySource()
+            +  注入 ： @AutoWired Environment env;
+            +  检索 ： env.getProperty("demo");
+                +  getProperty() 的重载
+                    +  String getProperty(String key); 
+                    +  String getProperty(String key, String defaultValue);
+                    +  T getProperty(String key, Class < T > type); 
+                    +  T getProperty(String key, Class < T > type, T defaultValue);
+                +  属性必须定义：getRequiredProperty(String key); 若无定义则抛出 IllegalStateException 异常；
+            +  检查是否存在 ： boolean containsProperty(String key); 
+            +  将属性解析成类 ： getPropertyAsClass(String key， Class clazz);   
+            +  检查 profile 处于激活状态：
+                +  String[] getActiveProfiles(); 返回激活 profile 名称的数组；
+                +  String[] getDefaultProfiles(); 返回默认 profile 名称的数组；
+                +  boolean acceptsProfiles(String ... profiles); 若 Environment 支持给定 profile，则返回 true； 
+            + 解析属性占位符：
+                +  ${...} 或 @Value("${value}")
+                +  使用前提：
+                    +  配置 PropertyPlaceholderConfigurer 
+                    +  或配置 PropertySourcePlaceholderConfigurer (Spring 3.1 以上推介使用)
+                    +  或使用 XML 配置：<context:property-placeholder />
+    +  Spring 表达式语言（SpEL）
+        +  Spring 3 引用
+        +  特性：
+            +  使用 bean ID 来引用 bean；
+            +  调用方法和访问对象的属性；
+            +  对值进行算术、关系和逻辑运算；
+            +  正则表达式匹配；
+            +  集合操作；
+        +  SpEL 表达式要放在 #{...} 里；属性占位符要放在 ${...} 里；
+        +  例子：
+            +  #{T(System).currentTimeMillis()} ：调用 java.lang.System 中 currentTimeMillis() 方法；
+            +  #{demo.value} ：得到 ID 为 demo 的 bean，获取其 value 属性值；
+        +  使用类型：访问类作用域的方法和常量：T() ——> 运算结果是 Class 对象
+        +  运算符
+            +  算术运算符：+、-、*、/、%、^
+            +  比较运算符：<、>、==、<=、>=、lt、gt、eq、le、ge
+            +  逻辑运算符：and、or、not、|
+            +  条件运算符
+                +  "?"
+                +  "?." ： 访问它右边的内容之前确保它对应的元素不是 null；
+            +  正则表达式：matches
+                +  有效电邮例子：#{admin.email matches '[ a-zA-Z0-9._% +-] +@[ a-zA-Z0-9.-] +\\. com'}
+        +  计算集合
+            +  查询运算符 ： 
+                +  (.?[]) ：查询所有匹配项
+                +  (.^[]) ：查询第一个匹配项
+                +  (.$[]) ：查询最后一个匹配项    
+            +  投影运算符 ：(.![]) 从集合中的每个成员中选择特定的属性放到另一个集合中；
+                     
 ### 4.面向切面
 
 ## 第二部分：Web 中的 Spring
