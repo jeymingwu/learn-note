@@ -302,7 +302,7 @@ public @interface Cold {
                 +  "?"
                 +  "?." ： 访问它右边的内容之前确保它对应的元素不是 null；
             +  正则表达式：matches
-                +  有效电邮例子：#{admin.email matches '[ a-zA-Z0-9._% +-] +@[ a-zA-Z0-9.-] +\\. com'}
+                +  有效电邮例子：#{admin.email matches '[a-zA-Z0-9._% +-] +@[a-zA-Z0-9.-] +\\. com'}
         +  计算集合
             +  查询运算符 ： 
                 +  (.?[]) ：查询所有匹配项
