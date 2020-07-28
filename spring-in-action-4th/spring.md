@@ -342,8 +342,66 @@ public @interface Cold {
         +  Spring 只支持方法级别的连接点
 
 +  通过切点选择连接点
+    +  Spring AOP 支持的 AspectJ 切点指示器：
+        +  arg()：限制连接点匹配参数为**指定类型**的执行方法；
+        +  @args()：限定连接点匹配参数为**指定注解标注**的执行方法；
+        +  execution()：用于匹配连接点的执行方法；
+        +  this()：限制连接点匹配 AOP 代理的 bean 引用为指定类型的类；
+        +  target：限制连接点匹配目标对象为指定类型的类；
+        +  @target()：限制连接点匹配特定的执行对象（该类要具备有指定类型的注解）；
+        +  within()：限制连接点匹配指定的类型；
+        +  @within()：限制连接点匹配指定注解所标注的类型；
+        +  @annotation：限定匹配带有指定注解的连接点；
+    +  切点表达式
+    +  在切点中选择 bean：bean('beanID')
+![使用 AspectJ 切点表达式来选择 Performance 的 perform() 方法](../spring-in-action-4th/img/spring-aop-expression.png)  
+使用 AspectJ 切点表达式来选择 Performance 的 perform() 方法  
 
+![使用 within() 指示器限定切点范围](../spring-in-action-4th/img/spring-aop-expression-within.png)  
+使用 within() 指示器限定切点范围 (连接关系：与&&或||非!)
+    
 +  使用注解创建切面
+    +  Spring 的 AspectJ 自动代理仅仅使用 @AspectJ 作为创建切面的指导，切面依然是基于代理的；本质上依然是 Spring 基于代理的切面；
+    +  @AspectJ：标注一个切面；
+    +  通知定义：
+        +  @Before：在目标方法调用之前执行；
+        +  @After：在目标方法返回或抛出异常后调用；
+        +  @AfterReturning：在目标方法返回后调用；
+        +  @AfterThrowing：在目标方法抛出异常后调用；
+        +  @Around：环绕通知，将目标方法封装；
+            +  ProceedingJoinPoint：在通知中通过它来调用被通知的方法；proceed();若不调用，则会阻塞对被通知方法的访问；
+    +  @Pointcut：定义切点；
+    +  启用切面：
+        1. 启用 AspectJ 自动代理
+            +  JavaConfig：@EnableAspectJAutoProxy :启用 AspectJ 自动代理；
+            +  XML：<aop:aspectj-autoproxy />
+        2. 声明切面 bean
+    +  处理通知中的参数
+    +  通过注解引入新功能
+        +  @DeclareParents 注解：
+            +  value 属性：指定哪种类型的 bean 要引入该接口；
+            +  defaultImpl 属性：指定为了引入功能提供实现的类；
+        
+```java
+package concert;
+public interface Performance {
+    void perform();
+}
+```
+![定义切面](../spring-in-action-4th/img/aop-annotation.png)  
+例子：定义切面
+
+![使用 @Pointcut 定义命名的切点定义切面](../spring-in-action-4th/img/aop-annotation-pointcut.png)  
+例子：使用 @Pointcut 定义命名的切点定义切面
+
+![使用环绕通知重新实现切面](../spring-in-action-4th/img/aop-annotation-around.png)  
+例子：使用环绕通知重新实现切面
+
+![使用参数化的通知来记录磁道播放次数](../spring-in-action-4th/img/aop-annotation-args-example.png)  
+例子：使用参数化的通知来记录磁道播放次数
+
+![在切点表达式中声明参数，将参数传入到通知方法中](../spring-in-action-4th/img/aop-annotation-args.png)  
+例子：在切点表达式中声明参数，将参数传入到通知方法中
 
 +  在 XML 中声明切面
 
