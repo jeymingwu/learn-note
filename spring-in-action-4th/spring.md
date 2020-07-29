@@ -404,6 +404,20 @@ public interface Performance {
 例子：在切点表达式中声明参数，将参数传入到通知方法中
 
 +  在 XML 中声明切面
+    +  Spring AOP 配置元素能够以非入侵的方式声明切面
+        +  <aop:advisor />：定义 AOP 通知器
+        +  <aop:after />：定义 AOP 后置通知
+        +  <aop:after-returning />：定义 AOP 返回通知
+        +  <aop:after-throwing />：定义 AOP 异常通知
+        +  <aop:around />：定义 AOP 环绕通知
+        +  <aop:aspect />：定义一个切面
+        +  <aop:aspectj-autoproxy />：启用 @AspectJ 注解驱动的切面
+        +  <aop:before />：定义 AOP 前置通知
+        +  <aop:config />：顶层 AOP 配置元素
+        +  <aop:declare-parents />：以透明的方式为被通知的对象引入额外的接口
+        +  <aop:pointcut />：定义一个切点
+   
+![Spring AOP XML配置Demo](../src/main/resources/spring/aop/SpringAopXML.xml)     
 
 +  注入 AspectJ 切面
 
