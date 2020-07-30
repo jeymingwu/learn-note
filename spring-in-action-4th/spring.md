@@ -417,7 +417,7 @@ public interface Performance {
         +  <aop:declare-parents />：以透明的方式为被通知的对象引入额外的接口
         +  <aop:pointcut />：定义一个切点
    
-![Spring AOP XML配置Demo](../src/main/resources/spring/aop/SpringAopXML.xml)     
+[Spring AOP XML配置Demo](../src/main/resources/spring/aop/SpringAopXML.xml)     
 
 +  注入 AspectJ 切面
 
