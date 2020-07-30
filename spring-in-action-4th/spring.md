@@ -422,6 +422,21 @@ public interface Performance {
 +  注入 AspectJ 切面
 
 ## 第二部分：Web 中的 Spring
++  HTTP 协议无状态性 ——> 状态管理、工作流、验证等问题；
++  Spring MVC
+    +  Model-View-Controller
+    +  请求步骤：
+        1. 用户请求
+        2. DispatchServlet 将用户的请求发送给 HandlerMapping , 请求获取 Handler；
+        3. HandlerMapping 根据请求的 URL 查找执行类 Handler，并返回 Handler；
+        4. DispatchServlet 调用 HandlerAdapter 处理器适配器；
+        5. HandlerAdapter 经过适配后调用 Handler，处理业务逻辑；
+        6. Handler 执行完后返回 ModelAndView；
+        7. HandlerAdapter 将执行的结果 ModelAndView 返回至 DispatchServlet；
+        8. DispatchServlet 将 ModelAndView 传给视图解析器 ViewResolver 进行解析；
+        9. ViewResolver 解析后返回具体的 View 到 DispatchServlet；
+        10. DispatchServlet 对 View 进行渲染视图；
+        11. DispatchServlet 响应用户；
 
 ## 第三部分：后端中的 Spring
 
