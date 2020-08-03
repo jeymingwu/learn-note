@@ -1,0 +1,165 @@
+#  SQL必知必会（第四版）
+1. SQL
+    +  数据库： 一个以某种有组织的方式存储的数据集合；
+        +  数据库软件：DBMS
+        +  表：一种结构化文件，某种特定类型数据的结构化清单；可存储某种特定类型的数据；
+        +  模式： 关于数据库和表的布局及特性的信息；
+        +  列： 表中的一个字段；
+        +  行： 表中的一个记录；
+        +  主键： 一列（或一组列），其值能够唯一标识表中每一行；
+            +  主键的条件：
+                1. 任意两行都不具有相同的主键值；
+                2. 每一行都必须有一个主键值（主键列不允许为 NULL 值）；
+                3. 主键列中的值不允许修改或更新；
+                4. 主键值不能重用（若某行从表中删除，那么它的主键不能赋给以后的新行？）；
+            +  多个列作主键，所有列组合必须唯一；
+    +  SQL ： Structured Query Language
+        +  设计目的： 提供一种从数据库中读写数据的简单有效方法；
+        +  优点：
+            +  SQL 不是特定数据库供应商专有语言；
+            +  简单易学；
+            +  强有力语言；
+        
+2. 检索数据
+    +  SELECT 语句
+        +  SQL 语句注意：
+            +  以分号结束；
+            +  不区分大小写；
+            +  所有空格被忽略；
+        +  检索多个列，列名之间以逗号分隔；
+        +  检索所有列：星号（*）通配符；
+        +  检索不同的值：DISTINCT 关键字（直接放在列名前面）；
+            +  注意： DISTINCT 关键字作用于所有的列；
+        +  限制结果：返回第一行或者一定数量的行；
+            +  各种数据库实现的方式：
+                +  SQL Server \ Access ——> TOP关键字： SELECT TOP 1 name FROM form;
+                +  DB2 ： SELECT name FROM form FETCH FIRST 1 ROWS ONLY;
+                +  Oracle ——> ROWNUM 行计数器: SELECT name FROM form WHERE ROWNUM <= 1;
+                +  MySQL \ MariaDB \ PostgreSQL \ SQLite ——> LIMIT 字句：
+                    +  SELECT name FROM form LIMIT 1; // 一条数据（第一条）
+                    +  SELECT name FROM form LIMIT 1 OFFSET 5; // 第五行后的一条（第六条）数据；第一个数字是检索的行数，第二个数字是从哪开始
+                    +  简化版：LIMIT 5,1; // 逗号之前的值对应 OFFSET，之后对应 LIMIT
+        +  使用注释
+            +  行内解释：“--”
+            +  “#”
+            +  "/**/"
+        
+3. 排序检索数据
+    +  ORDER BY 子句（若出现，必然是 SQL 中最后一条语句）
+    +  多列列排序：简单指定列名，列名之间用逗号隔开；按列名顺序依次排序；
+    +  按列位置排序
+    +  指定排序方向：
+        +  ASC：升序（默认）（ASCENDING）
+        +  DESC：降序（DESCENDING）
+    
+4.  过滤数据
+    +  WHERE 子句
+    +  搜索条件（过滤条件）
+    +  检查单个值： SELECT name FROM from WHERE name = 'tony';
+    +  不匹配检查:  SELECT name FROM from WHERE name <> 'tony';
+    +  范围值检查： SELECT name FROM from WHERE name BETWEEN 'tony' AND 'Jenny';
+    +  空值检查: SELECT name FROM from WHERE name IS NULL;
+
+    WHERE  子句操作符  
+    
+    | 操作符 | 说明  |
+    | :----:   | :----: |
+    |  = | 等于
+    | <> | 不等于 | 
+    | != | 不等于 | 
+    | < | 小于 | 
+    | <= | 小于等于 | 
+    | !< | 不小于 |
+    |  \> | 大于 |
+    | >= | 大于等于 | 
+    | !> | 不大于 | 
+    | BETWEEN | 在指定的两个值之间 |
+    | IS NULL | 为 NULL 值 | 
+            
+5.  高级数据过滤：组合 WHERE 子句：
+    +  操作符：
+        +  AND  （优先级高）
+        +  OR
+        +  IN
+            +  优点：
+                +  IN 操作符语法更清楚更直观；
+                +  求值顺序容易管理；
+                +  IN 比 OR 执行上更快
+                +  可包含其他 SELECT 语句
+        +  NOT （不单独使用）
+        
+6.  用通配符进行过滤
+    +  LIKE 关键字
+        +  搜索模式：由字面值、通配符或两者组合构建的搜索条件；
+        +  通配符：用来匹配值的一部分特殊字符；(区分大小写)
+            +  百分号（%）通配符：表示任意字符出现任意次数；（Access 需使用'*'）
+            +  下划线（_）通配符：只匹配单个字符；（Access 需使用'?'）
+            +  方括号（[]）通配符：指定一个字符集，必须匹配指定位置的一个字符；（只支持 Access 和 SQL Server）
+    +  使用技巧：
+        +  不要过度使用；
+        +  尽量不要放在搜索模式的开始处；
+        +  注意通配符的位置；
+
+7. 创建计数字段
+    +  计算字段：并不实际存在数据库表中，是在运行时 SELECT 语句内创建的；
+    +  拼接字段：
+        +  拼接：将值连接在一起构成单个值；
+        +  使用 加号（+）或两个竖杠（||）表示；（MySQL 和 MariaDB 不支持，需使用特殊函数concat）
+        +  TRIM 函数
+            +  使用 RTRIM() 消除拼接填充的空格；去掉值右边的所有空格；
+            +  LTRIM()：去掉字符创左边的空格；
+            +  TRIM()：去掉字符串左右两边的空格；
+    +  使用别名：AS
+    +  执行算术计算
+        +  "+"、"-"、"*"、"/"：加、减、乘、除
+        
+8.  使用函数处理数据
+    +  函数
+        +  提取字符串的组成部分：
+            +  Access：MID()
+            +  DB2\Oracle\PostgreSQL\SQLite：SUBSTR()
+            +  MySQL\SQL Server：SUBSTRING()
+        +  数据类型转换：
+            +  Access\Oracle：有多个函数，每个类型的转换分别有一个；
+            +  BD2\PostfreSQL：CAST()
+            +  MariaDB\MySQL\SQL Server：CONVERT()
+        +  取当前日期：
+            +  Access：NOW()
+            +  BD2\PostgreSQL：CURRENT_DATE
+            +  MariaDB\MySQL：CURDATE()
+            +  Oracle：SYSDATE
+            +  SQL Server：GETDATE()
+            +  SQLite：DATE()
+    +  使用函数：
+        +  用于处理文本字符串；
+        +  用于数值数据上进行算术操作的数值函数；
+        +  用于处理日期和时间值并从这些值中提取特定成分的日期和时间函数；
+        +  返回 DBMS 整使用的特殊信息的系统函数；
+
+    常用的文本处理函数
+    
+    | 函数 | 说明 | 备注 |
+    | :---: | :---: | ：--- |
+    | LEFT() | 返回字符串左边的字符 | 或使用子字符串函数 |
+    | RIGHT() | 返回字符串右边的字符 | 或使用子字符串函数 |
+    | LTRIM() | 去掉字符串左边的空格 | |
+    | RTRIM() | 去掉字符串右边的空格 | |
+    | LOWER() | 将字符串转换为小写 | Access 使用 LCASE() |
+    | UPPER() |  将字符串装换为大写 | Access 使用 UCASE() |
+    | LENGTH() |  返回字符串的长度 | |
+    | SOUNDEX() | 返回字符串的 SOUNDEX 值 | SOUNDEX 是一个将任何文本串装换成其语音表示的字母数字模式的算法 |
+    
+    数值处理函数
+    
+    |  函数  |  说明  |
+    | :---: | :---: |
+    | ABS() | 返回一个数的绝对值 |
+    | COS() | 返回一个角度的余弦值 |
+    | EXP() | 返回一个数的指数值 |
+    | PI() | 返回圆周率 |
+    | SIN() | 返回一个角度的正弦值 |
+    | SQRT() | 返回一个数的平方根 |
+    | TAN() | 返回一个角度的正切值 |
+    
+9. 汇总数据
+    +  汇集函数：
