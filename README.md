@@ -5,3 +5,6 @@
 
 
 +  [Craig Walls.Spring 实战（第四版）[M].人民邮电出版社:北京,2016:1.](./spring-in-action-4th/spring.md)
+
+
++ [钱文品.Redis 深度历险：核心原理与应用实践[M].电子工业出版社:北京,2019:1-232.](./Redis%20深度历险核心原理与应用实践/README.md)
