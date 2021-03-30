@@ -6,7 +6,11 @@
 
     <groupId>org.example</groupId>
     <artifactId>learn-note</artifactId>
+    <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>Redis 深度历险核心原理与应用实践</module>
+    </modules>
 
     <properties>
         <spring.version>4.3.20.RELEASE</spring.version>

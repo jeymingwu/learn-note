@@ -90,6 +90,117 @@
 > ltrim key start_index end_index #保留 start_index 到 end_index 的元素，区间外截断
 ```
 
+#### hash 字典
+
++ 内部结构：
+    + 类似 Java 中的 HashMap，数组+链表的无序字典；
+    + 与 HashMap 的差异：
+        + Redis 字典值（key）只能是字符串；
+        + HashMap rehash （重新散列）需一次性全部完成；
+        + Redis rehash 采用渐进式 rehash 策略；（追求高性能，不阻塞服务）
+            + 同时保留新旧两个 hash 结构；
+            + 查询时同时查询两个 hash 结构；
+            + 后续定时任务或 hash 操作中，循序渐进将旧 hash 的内容迁移至新的 hash 结构中；
+            + 完成迁移后，旧的 hash 结构自动被删除，内存被回收；
+    + 与 string 字符串的差异：
+        + string 字符串需要一次性全部序列化整个对象；（整体获取）
+        + hash 字典可以根据每个字段单独获取，但存储消耗高于 string 结构； （可分段按需获取）
++ 常用于存储用户信息等；
+
+```shell script
+# string 设值
+> set hash "key1:value1;key2:value2;key3:value3"
+
+# hash 设值
+> hset hash key1 value1
+> hset hash key2 value2
+> hset hash key3 value3
+> hmset hash key1 value1 key2 value2 key3 value3 #批量设值，等价于上面
+
+# 取值
+> hget hash key1
+> hgetall hash #entries(), key 和 value 间隔出现
+
+# 计数（与 string 一样可对 hash 中单个子 key 进行操作）
+> hlen hash #统计 hash 中有多少个元素
+> hincr hash key #hash 中 key 的 value 自增
+> hincrby hash key number #hash 中 key 的 value 加上 number
+> hdecr hash key #hash 中 key 的 value 自减
+> hdecrby hash key number #hash 中 key 的 value 减去 number
+```
+
+#### set 集合
+
++ 内部结构：
+    + 类似 Java 中 HashSet，键值对无序且唯一；
+    + 内部实现相当于一个特殊的 hash 字典，只是 hash 中所有 value 均为 NULL；
+    + 当 set 集合中最后一个元素被移除后，set 结构自动删除，内存被回收；
++ 常用于去重；
+
+```shell script
+# 设值
+> sadd key value1
+> sadd key value2 value3 #可一次添加多个元素
+
+> smembers key #遍历所有元素
+
+> spop key #随机弹出一个元素
+
+> sismember key value1 #判断某个元素是否存在
+
+> scard key #获取当前 set 的元素的个数
+```
+
+#### zset 有序集合
+
++ 内部结构：
+    + 类似 Java 中 SortedSet 和 HashMap 的结合体；
+        + set：内部 value 唯一；
+        + sort：每个 value 均赋予一个 score，代表 value 的**排序权重**；
+    + 内部实现：跳跃列表；
+    + 当 zset 集合中最后一个元素被移除后，结构被删除，内存被回收；
++ 常用于存储需要排序的列表，例如分数排行版等；
+
+```shell script
+# 基本操作
+> zadd key socre1 value1 #往有序集合 key 中添加元素 value1
+> zadd key socre2 value2
+> zcard key #统计有序集和 key 中元素的个数
+> zscore key value #获取指定 value 的 score 值
+> zrank key value #获取指定 value 的排名
+> zrem key value #移除value
+
+#遍历
+> zrange key start_index end_index #在 start_index 和 end_index 区间中正序遍历key有序集合
+> zrevrange key start_index end_index #在 start_index 和 end_index 区间中逆序遍历key有序集合
+> zrangebyscore key start_score end_score #根据score分值区间 (start_score, end_score) 遍历key有序集合
+> zrangebyscore key -inf socre withscores #根据score分值区间 (-∞, score] 遍历key有序集合
+```    
+
+#### 基本数据结构总结
++ 基本数据结构：
+    + string
+    + list
+    + hash
+        + set
+        + zset
++ 容器型数据结构：list、set、hash、zset；
++ 规则：
+    + create if not exists：容器不存在则创建；
+    + drop if no elements：容器中没有元素则销毁容器，释放内存；
++ 过期时间：
+    + 所有数据结构均可以设置过期时间；
+    + 若过期时间到了，则该对象自动被删除；
+    + 若没有设置过期时间，该对象永久存在；
+    + 过期时间以对象为单位；如 hash 中某个 key 设置了过期时间，若到期则整个 key 均被删除；
+
+```shell script
+# 过期时间
+> set key value
+> expire key 30 #对象key在30秒后过期
+> ttl key #查询对象key的生存时间，-1则表示永久存在
+> set key value #若已设置对象key的过期时间，重新set后过期时间会消失
+```
 
 ### [1.3 分布式锁]()
 
