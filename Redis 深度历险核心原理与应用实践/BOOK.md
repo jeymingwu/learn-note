@@ -255,7 +255,53 @@
     + 可使用 zset（有序集合）来实现；value - 消息，score - 消息到期处理时间；
     + 具体操作：多个线程轮询 zset 获取到期的任务；
 
-### [1.5 位图]()
+### 1.5 位图
+
++ 常用于**存储较常规整齐的数据**，如一年的签到记录等；
++ 最小单位：比特 bit；大小自动扩展；设置某个偏移位置若超出现有内容范围则自动将位数组填充0；
++ 位图不是特殊的数据结构，实际上是普通的字符串，也就是**byte数组**（注意：位数组的顺序和字符的位顺序相反）；
++ 可直接使用 get/set 获取整个位图内容（**整存整取**）；也可以使用 getbit/setbit 将 byte 数组当成“位数组”处理（**零存零取**）；
++ 统计与查找：
+    + 统计指令：bitcount [start] [end]：统计指定范围内 1 的个数；
+    + 查找指令：bitpos key [0/1] [start] [end]：查询指定范围内出现第一个 0 或 1 的位置；
+    + 注意：start 和 end 是字节索引，以 8 的倍数出现；
++ 魔术指令：bitfield
+    + Redis 3.2 后新增指令，可一次操作多个位，但最多 64 个连续位（超过 64 个连续位需使用多个子指令）；
+    + bitfield 一次执行多个子指令；
+    + 三个子指令：
+        + get
+        + set
+        + incrby：对指定范围的位进行自增操作；可能出现溢出；
+            + Redis 默认处理溢出的方法：折返（出现溢出，溢出部分丢弃）；
+            + 溢出策略子指令：overflow
+                + wrap 折返（默认）：出现溢出，溢出部分丢弃；
+                + fail 失败：报错不执行；
+                + sat 截断：超过范围就停留在最大或最少值；
+
+```shell script
+# 统计
+> bitcount key #全部字符中 1 的位数
+> bitcount key 0 0 #第一个字符中 1 的位数
+> bitcount key 0 1 #前两个字符中 1 的位数
+
+# 索引
+> bitpos key 0 #第一个 0 位
+> bitpos key 1 #第一个 1 位
+> bitpos key 1 1 1 #从第二个字符算起，第一个 1 位
+> bitpos key 1 2 2 #从第三个字符算起，第一个 1 位
+
+# bitfield 魔术指令
+> bitfield key get u4 0 #从第一个位开始取 4 个位，结果是无符号数（u）
+> bitfield key get u3 2 #从第三个位开始取 3 个位，结果是无符号数（u）
+> bitfield key get i4 0 #从第一个位开始取 4 个位，结果是有符号数（i）
+> bitfield key get u4 0 get u3 2 get i4 0 #等价上三条语句
+
+> bitfield key set u8 8 97 #从第 9 个位开始，将接下来 8 个位用无符号数 97 替换
+
+> bitfield key incrby u4 2 1 #从第三个位开始，对接下来的 4 位无符号数 + 1
+> bitfield key overflow sat incrby u4 2 1
+> bitfield key overflow fail incrby u4 2 1
+```
 
 ### [1.6 HyperLogLog]()
 
