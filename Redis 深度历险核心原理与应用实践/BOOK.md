@@ -26,7 +26,7 @@
 
 #### string 字符串
 
-+ Redis 中所有数据结构均以**唯一的 key 字符串作名称**，通过这唯一的 key 获取对应的 value 数据；不同类型的数据结构的差异在于** value 结构的不同**；
++ Redis 中所有数据结构均以**唯一的 key 字符串作名称**，通过这唯一的 key 获取对应的 value 数据；不同类型的数据结构的差异在于**value 结构的不同**；
 + 最简单的数据结构，用途十分广泛，常见于缓存用户信息；
 + 内部结构：
     + 字符数组；
@@ -202,7 +202,37 @@
 > set key value #若已设置对象key的过期时间，重新set后过期时间会消失
 ```
 
-### [1.3 分布式锁]()
+### 1.3 分布式锁
+
++ 本质：“**占坑**”——设值；若该值存在则设值失败（获取锁失败），若该值为空则设值成功（成功获取锁）；
++ Redis 分布式锁实际情况：
+    + 加锁：setnx xxx-lock true;（setnx：set if not exists）
+    + 释放锁：del xxx-lock;
+    + 弊端：若应用在执行过程中出现异常无法调用 del 语句，导致该锁一直被占用，无法释放，造成死锁；
++ 改良方案一：
+    + 加锁后给该值设置一个过期时间，那么即使应用运行出现异常也能保证锁能自动释放；
+    + 加锁：setnx xxx-lock true;
+    + 过期时间：expire xxx-lock time;
+    + 释放锁：del xxx-lock;
+    + 弊端：因 setnx 和 expire 不是原子操作，难以保证 setnx 执行后 expire 能顺利执行；若 setnx 执行后因某些情况导致 expire 无法执行，那么死锁也可能会出现；
++ 改良方案二：
+    + 社区方案：引入插件——分布式锁 library，但实现方式复杂；
+    + Redis 2.8 后方案：新增 set 指令的扩展参数，是 setnx 和 expire 可一起执行；
+    + 加锁及设置过期时间： set xxx-lock true ex time nx;
+    + 语句解析：SET key value [EX seconds] [PX milliseconds] [NX|XX]
+        + EX seconds：设置键的过期时间为 second 秒；
+        + PX milliseconds：设置键的过期时间为 milliseconds 毫秒；
+        + NX：只在键不存在时，才对键进行设置操作；
+        + XX：只在键存在时，才对键进行设置操作；
+        + SET 语句操作成功完成后返回 “OK”，否则 “nil”；
++ 涉及的问题：
+    + 超时问题：Redis 分布式锁不适用于执行时间长的任务；
+    + 锁被其他线程释放：为 value 参数设置一个随机数，释放时先比较随机数是否一致；
+    + 问题延伸——比较随机数和释放锁不是原子操作：可使用 Lua 脚本保证连续多个指令的原子性执行；
+    + 锁可重入性问题：
+        + 可重入性：该锁支持同一个线程多次加锁；
+        + 实现：需对客户端 set 方法进行包装，使用线程 ThreadLocal 变量存储当前持有锁的计数；
+        + [实现Demo](./src/main/java/com/example/redis/RedisWithReentrantLock.java)
 
 ### [1.4 延时队列]()
 
