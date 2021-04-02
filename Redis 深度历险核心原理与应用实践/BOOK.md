@@ -329,10 +329,10 @@
 + Docker 镜像：redislabs/rebloom
 + Java 客户端支持的 Jar 包：RedisLabs 提供的 JReBloom（基于 Redis 3.0 以上）、letture；
 + 基本操作：
-    + bf.add：添加元素；
-    + bf.exists：查询元素是否存在；
-    + bf.madd：可批量添加元素；
-    + bf.mexists:可批量查询元素是否存在；
+    + bf.add [key] [value]：添加元素；
+    + bf.exists [key] [value]：查询元素是否存在；
+    + bf.madd [key] [value1] [value2] ……：可批量添加元素；
+    + bf.mexists [key] [value1] [value2] ……:可批量查询元素是否存在；
 + 自定义参数：需在 bf.add 命令执行前使用 bf.reserve 指令显式创建；（不创建则使用默认配置；若 key 存在则报错）
     + bf.reserve 三个参数：
         + key
@@ -357,13 +357,27 @@ Redis 布隆过滤器原理图（其中 f、g、h 表示无偏 hash 函数）
     + k = 0.7 / (l / n)
     + f = 0.6185 ^ (1 / n)
     + 推导过程：略；
-    + 计算器：[https://krisives.github.io/bloomcalculator](https://krisives.github.io/bloomcalculator)
+    + 计算器：[https://krisives.github.io/bloom-calculator/](https://krisives.github.io/bloom-calculator/)
 + 使用场景：
     + 爬虫系统对 URL 的去重；
     + NoSQL 数据库的使用，可降低数据库 IO 请求数量；
     + 邮件系统中过滤垃圾邮件；
 
-### [1.8 简单限流]()
+### 1.8 简单限流
+
++ 限流：“断尾求生”、“弃卒保车”；
+    + 控制流量：在分布式领域中，若系统处理能力有限，阻止计划外计划外的请求继续对系统施压；
+    + 控制用户行为，避免垃圾请求；（如某个行为在规定时间内被允许的次数）
++ Redis 实现简单限流策略：
+    + 常见简单限流策略：系统限定用户某个行为在指定时间内只能允许发生 N 次；
+    + Redis 解决方案：
+        + 限流需求中存在一个滑动时间窗口（定宽）；
+        + 数据结构：zset 有序集合；
+            + key：行为
+            + value：无意义，需唯一（区分）
+            + score：记录时间窗口
+        + [实现 Demo](./src/main/java/com/example/redis/SimpleRateLimiter.java)
+        + 缺点：因需记录窗口内所有的行为记录，若量很大，则会消耗大量存储空间；（如 60s 内操作不得超过 100 万次）
 
 ### [1.9 漏斗限流]()
 
