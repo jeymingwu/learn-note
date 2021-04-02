@@ -24,7 +24,7 @@
 
 ### [1.5 位图](./BOOK.md#15-位图)
 
-### [1.6 HyperLogLog]()
+### [1.6 HyperLogLog](./BOOK.md#16-HyperLogLog)
 
 ### [1.7 布隆过滤器]()
 
