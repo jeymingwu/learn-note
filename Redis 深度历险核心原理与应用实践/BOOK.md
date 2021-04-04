@@ -398,7 +398,78 @@ Redis 布隆过滤器原理图（其中 f、g、h 表示无偏 hash 函数）
         + rate-dividend\rate-divisor：表示每 rate-dividend 秒最多执行 rate-divisor 次；
         + optional：可选项，表示灌水多少，默认为1；
         
-### [1.10 GeoHash]()
+### 1.10 GeoHash
+
++ 需求：用坐标计算附近的元素；
++ 方案一：数据库存储并计算
+    + 地图元素的位置使用二维的经纬度表示，经度范围 [-180, 180]，纬度范围 [-90, 90]，纬度正负以赤道为界，北正南负，经度以本初子母线为界，东正西负；
+    + 距离不远的两点位置：勾股定理可得之间的距离；（附近的元素符合可使用）（但需注意地球是一个椭圆，经纬度坐标密度不一致，要求精确需按一定的系数加权后处理）
+    + 关系型数据库存储：元素 id，经度 x，纬度 y；
+    + 计算方式：
+        1. 遍历计算**所有元素**与目标元素的距离然后再进行排序；（计算量太大，性能无法满足）
+        2. 矩形区域限定元素，对区域内元素进行全量距离计算再排序；
+            + 优点：明显减少计算量；
+            + 缺点：若查询请求过多，性能应付不来；特别是高并发场景下；
+            + SQL 语句：SELECT * FROM table where x0 - r < x < x0 + r AND y0 - r < y < y0 + r
+            + （为满足高性能矩形区域算法，数据表需把经纬度坐标加上**双向符合索引**，可最大优化查询性能）
+
+![矩形区域限定元素](./img/relational-db-position.png) 
+
+矩形区域限定元素           
+
++ 方案二：GeoHash 算法
+    + 通用的地理位置距离排序算法；
+    + 算法核心：将二维的经纬度数据映射到一维整数，在线上获取附近的点；
+    + 算法具体：所有元素坐标都放置唯一的方格中，方格越小，坐标越精准；然后对方格进行整数编码，越靠近目标的方格编码越小；简单的编码方案 —— 切蛋糕法（二刀法）；
+    + GeoHash 算法继续对整数做 base32 编码变成一个字符串；
+    + Redis 中使用 52 位整数编码，使用 zset 有序集合存储（value - 元素的 key，score - GeoHash 的 52 位整数值）；
+    
+![切蛋糕法（二刀法）编码](./img/geohash-position.jpg)
+
+切蛋糕法（二刀法）编码
+
++ Geo 指令
+    + Redis 3.2 版本后提供；
+    + 6 个指令：
+        + 增加：geoadd
+        + 距离：geodist
+        + 获取元素位置：geopos
+        + 获取元素的 hash 值：geohash
+        + 获取附近的元素：geodiusbymember、georadius
+    + 注意事项：
+        + 一个地图应用，若使用 Redis 存储，无论数据多少，所有数据将存储至一个 zset 集合中；
+        + 若 Redis 使用集群，集合可能由一个节点迁移至另一个节点，若单个 key 数量过大，对迁移工作会造成很大影响，可能出现卡顿现象，影响线上服务正常运行；单个 key 对应数据量不宜超过 1 MB；
+        + Geo 数据使用单独 Redis 实例部署；
+        + 若数据过大，需将 Geo 数据拆分，降低单个 zset 集合大小；（可按国家、地区、省份、市区等维度拆分）
+
+```shell script
+# 增加
+> geoadd key x0 y0 id0 
+> geoadd key x1 y1 id1 x2 y2 id2 #一次可添加多个
+
+# 距离
+> geodist key id0 id1 km #距离可选 m、km、ml、ft（米、千米、英里、尺）
+
+# 获取元素位置
+> geopos key id0
+
+# 获取元素 hash 值
+> geohash key id0
+
+# 获取附近的元素
+> georadiusbymember key [id] [distance-number] [distance-unit] [show-option] count [number] [asc/desc]
+# id
+# distance-number：附近距离
+# distance-unit：附近距离的单位；（m、km、ml、ft）
+# show-option：可选项；withcoord、withdist、withhash；用来携带附加参数；在结果中输出坐标、距离、hash值；
+# number：最多显示的个数
+# asc/desc：升序/降序 输出显示
+
+> georadiusbymember key id0 20 km count 3 asc # 显示范围 20 公里内最多 3 个元素按距离正排（不排除自己）（输出id）
+
+# 根据坐标值查询附近的元素
+> georadius key [x] [y] [distance-number] [distance-unit] [show-option] count [number] [asc/desc]
+```
 
 ### [1.11 scan]()
 
