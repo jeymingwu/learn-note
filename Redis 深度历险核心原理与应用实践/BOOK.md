@@ -379,8 +379,25 @@ Redis 布隆过滤器原理图（其中 f、g、h 表示无偏 hash 函数）
         + [实现 Demo](./src/main/java/com/example/redis/SimpleRateLimiter.java)
         + 缺点：因需记录窗口内所有的行为记录，若量很大，则会消耗大量存储空间；（如 60s 内操作不得超过 100 万次）
 
-### [1.9 漏斗限流]()
+### 1.9 漏斗限流
 
++ 漏斗限流：常见限流方法之一；
+    + 漏斗：容量有限；若堵住漏嘴一直灌水就会变满，直至装不进；若放开漏嘴则水会流走，又可继续灌水；
+        + 漏嘴流水速率 >= 灌水速率：漏斗永远装不满；
+        + 漏嘴流水速率 < 灌水速率：漏斗满了需暂停灌水，直至腾出一部分空间；
+    + 引申：
+        + 漏斗剩余空间 -> 当前行为可持续进行的数量；
+        + 漏嘴流水速率 -> 系统允许该行为的最大频率；
+    + [漏斗限流Demo](./src/main/java/com/example/redis/FunnelRateLimiter.java)
+    + Demo 缺陷：单线程应用；多线程、分布式不适用；因为无法保证其过程的原子性（从 hash 中取值，在内存中运算，再回填 hash 结构），可加锁处理，但加锁失败后需重试（性能下降）或放弃（影响用户体验）；
++ **Redis-cell**：Redis 限流模块
+    + Redis 4.0 提供，限流 Redis 模块；模块使用了漏斗算法，并提供原子的限流指令；
+    + 只有一条指令：cl.throttle [key] [capacity] [rate-divisor] [rate-dividend]  [optional]
+        + key：关键字
+        + capacity：漏斗用量
+        + rate-dividend\rate-divisor：表示每 rate-dividend 秒最多执行 rate-divisor 次；
+        + optional：可选项，表示灌水多少，默认为1；
+        
 ### [1.10 GeoHash]()
 
 ### [1.11 scan]()
