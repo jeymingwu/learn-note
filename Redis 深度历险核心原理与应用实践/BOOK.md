@@ -53,7 +53,7 @@
 
 # 过期和set命令拓展
 > set key value 
-> expire key time #time为数字，表示多少秒后过期
+> expire key time #time为数字，单位为秒，表示多少秒后过期
 > setex key time value #等价于 set + expire 
 > setnx key value #若 key 不存在则设值，若存在则不作处理
 
@@ -262,7 +262,7 @@
 + 位图不是特殊的数据结构，实际上是普通的字符串，也就是**byte数组**（注意：位数组的顺序和字符的位顺序相反）；
 + 可直接使用 get/set 获取整个位图内容（**整存整取**）；也可以使用 getbit/setbit 将 byte 数组当成“位数组”处理（**零存零取**）；
 + 统计与查找：
-    + 统计指令：bitcount [start] [end]：统计指定范围内 1 的个数；
+    + 统计指令：bitcount key [start] [end]：统计指定范围内 1 的个数；
     + 查找指令：bitpos key [0/1] [start] [end]：查询指定范围内出现第一个 0 或 1 的位置；
     + 注意：start 和 end 是字节索引，以 8 的倍数出现；
 + 魔术指令：bitfield
@@ -514,8 +514,144 @@ Redis 布隆过滤器原理图（其中 f、g、h 表示无偏 hash 函数）
         + scan 指令：使用 type 指令获取 key 的类型，然后根据其数据结构获取其 len 或 size，最后输出较大的；缺点需脚本运行，步骤比较繁琐；
         + redis-cli 指令：可直接使用的扫描大对象指令；“redis-cli -h 127.0.0.1 -p 7001 --bigkeys [-i 0.1]”，可添加 -i 休眠选项，不会造成大幅提升 ops； 
 
-### [1.12 相关命令指南]()
+### 1.12 相关命令总结
 
++ 通用：
+    + 判断 key 是否存在：exists [key]
+    + 删除对象：del [key]
+    + 设值对象过期时间：expire [key] [second]
+    + 遍历符合的 key：keys [pattern]
++ string
+    + 设值：set [key] [value]
+    + 批量设值：mset [key1] [value1] [key1] [value1] ……
+    + 取值：get [key]
+    + 批量取值：mget [key1] [key2] ……
+    + 设值 + 过期：setex [key] [second] [value]
+    + 自增：incr [key]
+    + 自减：decr [key]
+    + 加法：incrby [key] [number]
+    + 减法：decrby [key] [number]
++ list
+    + 左进队：lpush [key] [value1] [value2] ……（可批量）
+    + 左出队：lpop [key]
+    + 右进队：rpush [key] [value1] [value2] ……
+    + 右出队：rpop [key]
+    + 求队列长度：llen [key]
+    + 显示第 index 个元素：lindex [key] [index]
+    + 显示从 start 到 end 的元素：lrange key [start] [end]
+    + 保留 start 到 end 区间的元素，其余截断：ltrim key [start] [end]
++ hash
+    + 设值：hset [key] [field1] [value1] 
+    + 批量设值：hmset [key] [field1] [value1] [field2] [value2] ……
+    + 取值：hget [key] [field1]
+    + 批量取值：hmset [key] [field1] [field2] ……
+    + 求集合容量：hlen [key]
+    + 字段和数值交替遍历：hgetall [key]
+    + 字段自增：hincr [key] [field]
+    + 字段自减：hdecr [key] [field]
+    + 字段加法：hincrby [key] [field] [number]
+    + 字段减法：hdecrby [key] [field] [number]
++ set
+    + 设值：sadd [key] [value1] [value2] …… （可批量）
+    + 随机弹出一个元素：spop [key]
+    + 遍历所有元素：smenbers [key]
+    + 判断某元素是否存在：sismember [key] [value]
+    + 统计集合中元素的个数：scard [key] 
++ zset
+    + 设值：zadd [key] [score] [value]
+    + 获取指定 value 的 score：zscore [key] [value]
+    + 获取指定 value 的排名：zrank [key] [value]
+    + 统计集合中元素的个数：zcard [key]
+    + 移除指定 value：zrem [key] [value]
+    + 在 start 和 end 区间中正序遍历：zrange [key] [start] [end]
+    + 在 start 和 end 区间中逆序遍历：zrevrange [key] [start] [end]
+    + 根据 score 分值区间 （start，end）遍历：zrangebyscore [key] [start] [end]
+    + 根据 socre 分值区间 (-∞, score] 遍历：zrangebyscore [key] -inf socre withscores
++ 分布式锁
+    + 加锁：setnx [key] [value]
+    + 加锁改良：set value [EX second] [PX millisecond] [NX|XX]
+        + EX second：过期时间为 second 秒
+        + PX millisecond：过期时间为 millisecond 毫秒
+        + NX：只在键不存在时设值
+        + XX：只在键存在时设值
++ 延迟队列
+    + 入队：rpush / lpush [key] [value1] [value2] …… 
+    + 出队：rpop / lpop [key]
+    + 出队（阻塞读）：brpop / blpop [key]
++ 位图
+    + 整存整取
+        + 设值：set [key] [value]
+        + 取值：get [key]
+    + 零存零取：
+        + 设值：bitset [key] [value]
+        + 取值：bitget [key]
+    + 统计指定范围内 1 的个数：gitcount [key] [start] [end]
+    + 统计指定范围内第一个出现 0 或 1 的位置：bitpos [key] [0/1] [start] [end]
+    + 魔术指令：
+        + bitfield：可一次执行多个子指令（最多64个）
+            + get
+            + set
+            + 自增：incrby
+                + 溢出处理：overflow
+                    + wrap 折返：溢出部分直接丢弃
+                    + fail 失败：报错不执行
+                    + sat 截断：超过最值仅保留最值
+                    
+```shell script
+# bitfield 魔术指令
+> bitfield key get u4 0 #从第一个位开始取 4 个位，结果是无符号数（u）
+> bitfield key get u3 2 #从第三个位开始取 3 个位，结果是无符号数（u）
+> bitfield key get i4 0 #从第一个位开始取 4 个位，结果是有符号数（i）
+> bitfield key get u4 0 get u3 2 get i4 0 #等价上三条语句
+
+> bitfield key set u8 8 97 #从第 9 个位开始，将接下来 8 个位用无符号数 97 替换
+
+> bitfield key incrby u4 2 1 #从第三个位开始，对接下来的 4 位无符号数 + 1
+> bitfield key overflow sat incrby u4 2 1
+> bitfield key overflow fail incrby u4 2 1
+```
+
++ HyperLogLog
+    + 增加计数：pfadd [key] [value]
+    + 获取计数：pfcount [key]
+    + 将多个 pf 计数值累加形成新的 pf 值：pfmerge
++ 布隆过滤器
+    + 添加元素：bf.add [key] [value]
+    + 批量添加元素：bf.madd [key] [value1] [value2] ……
+    + 判断元素是否存在：bf.exists [key] [value]
+    + 批量判断元素是否存在：bf.mexists [key] [value1] [value2] ……
+    + 自定义创建：bf.reserve [key] [error_rate] [initial_size] 
++ 简单限流
++ 漏斗限流
+    + cl.throttle [key] [capacity] [rate-divisor] [rate-dividend]  [optional]
+        + key：关键字
+        + capacity：漏斗用量
+        + rate-dividend\rate-divisor：表示每 rate-dividend 秒最多执行 rate-divisor 次；
+        + optional：可选项，表示灌水多少，默认为1；
++ Geohash
+    + 增加：geoadd [key] [x] [y] [id] [x1] [y1] [id1] ……（可批量）
+    + 获取两点间的距离：geodist [key] [id0] [id1] [m/km/ml/ft]
+    + 获取元素位置：geopos [key] [id]
+    + 获取元素的 hash 值：geohash [key] [id]
+    + 获取附近的元素：
+        + georadiusbymember key [id] [distance-number] [distance-unit] [show-option] count [number] [asc/desc]
+            + id
+            + distance-number：附近距离
+            + distance-unit：附近距离的单位；（m、km、ml、ft）
+            + show-option：可选项；withcoord、withdist、withhash；用来携带附加参数；在结果中输出坐标、距离、hash值；
+            + number：最多显示的个数
+            + asc/desc：升序/降序 输出显示
+        + georadius key [x] [y] [distance-number] [distance-unit] [show-option] count [number] [asc/desc]
++ scan
+    + 遍历符合的 key：scan [cursor] match [key] count [limit]
+        + cursor：整数游标
+        + key：匹配 key 的正则表达式
+        + limit：单词遍历槽的数量
+    + 遍历 zset：zscan [cursor] match [key] count [limit]
+    + 遍历 hash：hscan [cursor] match [key] count [limit]
+    + 遍历 set：sscan [cursor] match [key] count [limit]
+    + redis-cli 扫描大容量对象：redis-cli -h [address] -p [port] --bigkeys [-i 0.1] （隔 0.1 秒扫描一次）
+    
 ## [第二篇：原理篇]()
 
 ## [第三篇：集群篇]()
