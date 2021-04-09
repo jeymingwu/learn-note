@@ -122,7 +122,20 @@ $0\r\n\r\n
 > redis-benchmark -t set -P 2 -q
 ```
 
-### [2.5 事务]()
+### 2.5 事务
+
++ 基本用法：
+    + 普通：begin 开始、commit 提交、rollback 回滚；
+    + Redis：multi 开始、exec 执行、discard 丢弃；Redis 不支持回滚；
++ 因 Redis 的单线程特性，不用担心执行队列时被其他指令打搅，保证了“原子性”执行；
++ Redis 事务的原子性：
+    + 事务的原子性：要么全部成功，要么全部失败；
+    + Redis 事务不具备“原子性”，仅仅满足事务的“隔离性”中的串行化（当前执行的事务不被其他事务打断）；
++ 优化：Redis 事务每次发送指令到事务缓存队列中都需要经历一次网络读写，若指令较多，需要网络 IO 的时间会增加；一般结合管道 Pipeline 使用；
++ watch 机制：
+    + 处理并发问题；分布式锁是悲观锁；watch 机制是乐观锁；
+    + watch 在**事务开始前**关注一个或多个变量，当事务执行时，Redis 会判断该变量在 watch 之后是否被修改；若被修改则执行失败；
+    + [示例Demo](./src/main/java/com/example/redis/RedisTransactionDemo.java)
 
 ### [2.6 PubSub]()
 
