@@ -161,6 +161,50 @@ $0\r\n\r\n
         + 若不存在消费者，则消息直接被丢弃；
         + 若消费者在生产者发送消息前宕机，那么该消息也直接丢失；
         + PubSub 消息不被持久化；服务器宕机意味着不存在消费者；
-+ Redis 5.0 新增 Stream 数据结构；该功能可持久化消息队列；PubSub 可以下岗了；
++ Redis 5.0 新增 Stream 数据结构；该功能可持久化消息队列；PubSub 下岗；
 
-### [2.7 小对象压缩]()
+### 2.7 小对象压缩
+
++ Redis 是一个非常消耗内存的数据库，需注意节约使用内存，若内存不足则崩溃；
++ 32 位与 64 位：
+    + 32 位编译，内部所有数据结构所使用的指针空间占用减少一半；
+    + 若内存不超过 4GB，建议使用 32 位；
++ 小对象压缩存储
+    + 若集合数据结构很少，会使用**紧凑存储形式**压缩存储；（若 HashMap 为二维结构，若内部元素少，则使用一维数组存储）
+    + **ziplist**：Redis 的一个紧凑字节数组结构；
+        + 相关参数含义：
+            + zlbytes：整个压缩列表占用的字节数；
+            + zltail：最后一个 entry 的偏移量便于直接定位尾部元素；
+            + zllen：entry 的数量；
+            + zlend：标记结束；
+        + 若存储 hash 结构，那么 key 和 value 作两个 entry 被相邻存储；
+        + 若存储 zset 结构，那么 value 和 score 左两个 entry 被相邻存储；
+    + **intset**：紧凑的整数数组结构；
+        + 存放的元素都是**整数**且**个数较少**的 set 集合；
+        + 若整数可用 uint16 表示，intset 则是 16 位的数组；若超过范围，可动态升级到 uint32 或 uint64；
+        + 若添加字符串，则升级为 hashtable 结构；
++ Redis 内存回收机制：
+    + 不把空闲内存立即归还操作系统；
+    + 操作系统以**页**为单位来回收内存；只要页上还存在使用的 key，则该页不能被回收；
+    + **flushdb**：所有 key 被干掉，使用的页面完全干净，内存立即被回收；
+    + Redis 会**重新使用**尚未回收的内存空间；
+    + 总结：Redis 中 key 被删除，内存没有被操作系统回收的原因
+        1.Redis 中 key 分散很多页面，只要页面上存在还在使用的 key，那么该内存无法被回收；
+        2.Redis 会重新使用尚未回收的内存空间；
++ Redis 内存分配算法：
+    + 内存分配算法：划分内存页，考虑内存碎片，需要平衡性能和效率；
+    + 内存分配细节由第三方内存分配库实现：
+        + jemalloc（facebook）：默认，性能稍好；
+        + tcmalloc（google）
+
+```shell script
+# 存储界限；超过后“小对象存储”升级为“标准存储”；
+hash-max-ziplist-entries 512 #hash 元素个数超过 512
+hash-max-ziplist-value 64 #hash 任意元素 key/value 的长度超过 64
+list-max-ziplist-entries 512 #list 的元素个数超过 512
+list-max-ziplist-value 64 #list 的任意元素长度超过 64
+zset-max-ziplist-entries 128 #zset 元素个数超过 128
+zset-max-ziplist-value 64 #zset 的任意元素长度超过 64
+set-max-ziplist-entries 512 #set 整数元素个数超过 512
+```
+      
