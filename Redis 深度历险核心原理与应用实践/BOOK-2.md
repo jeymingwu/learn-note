@@ -137,6 +137,30 @@ $0\r\n\r\n
     + watch 在**事务开始前**关注一个或多个变量，当事务执行时，Redis 会判断该变量在 watch 之后是否被修改；若被修改则执行失败；
     + [示例Demo](./src/main/java/com/example/redis/RedisTransactionDemo.java)
 
-### [2.6 PubSub]()
+### 2.6 PubSub
+
++ Redis 依靠基本数据结构队列的延时消息队列，不支持消息的多播机制；
++ 消息多播：生产者生产一次消息，由中间件负责将消息复制到多个消息队列，每个消息队列由对应的消费组进行消费；
++ PubSub
+    + PubSub：PublisherSubscriber（发布者\订阅者模式）；
+    + 支持消息多播的模块；
+    + 生产者生产消息；消费者读取消息，若没有消息可以睡眠等待，也可使用 “listen” 阻塞监听来处理（原理和 blpop 一致）；
+    + 消费者可同时订阅多个主题；Redis 提供模式订阅功能 Pattern Subscribe，可一次订阅多个主题，在同一模式的消息都可以接收到；
+    + 消息结构：
+        + pattern：消息订阅模式；若消息直接通过 subscribe 指令订阅，则为空；
+        + type：消息类型；
+            + 普通消息：message；
+            + 控制消息：
+                + subscribe：订阅指令的反馈；
+                + psubscribe：模式订阅指令的反馈；
+                + unsubscribe：取消订阅指令的反馈；
+                + punsubscribe：取消模式订阅指令的反馈；
+        + data：消息内容；字符串；
+        + channel：当前订阅主题的名称；
+    + PubSub 缺点：
+        + 若不存在消费者，则消息直接被丢弃；
+        + 若消费者在生产者发送消息前宕机，那么该消息也直接丢失；
+        + PubSub 消息不被持久化；服务器宕机意味着不存在消费者；
++ Redis 5.0 新增 Stream 数据结构；该功能可持久化消息队列；PubSub 可以下岗了；
 
 ### [2.7 小对象压缩]()
