@@ -185,9 +185,11 @@ $0\r\n\r\n
         + 若添加字符串，则升级为 hashtable 结构；
         
 ![ziplist 小对象压缩存储](./img/redis-ziplist.png)
+
 ziplist 小对象压缩存储
 
 ![intset 小对象压缩存储](./img/redis-intset.png)
+
 intset 小对象压缩存储
 
 + Redis 内存回收机制：
