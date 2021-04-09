@@ -523,6 +523,7 @@ Redis 布隆过滤器原理图（其中 f、g、h 表示无偏 hash 函数）
     + 设值对象过期时间：expire [key] [second]
     + 遍历符合的 key：keys [pattern]
     + 查看对象使用的数据结构：object encoding [key]
+    + 查看内存使用情况：info memory
 + string
     + 设值：set [key] [value]
     + 批量设值：mset [key1] [value1] [key1] [value1] ……
