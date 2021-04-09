@@ -60,7 +60,7 @@
 
 ### [3.2 Sentinel](./BOOK-3.md#32-Sentinel)
 
-### [3.3 Codis]()
+### [3.3 Codis](./BOOK-3.md#33-Codis)
 
 ### [3.4 Cluster]()
 
