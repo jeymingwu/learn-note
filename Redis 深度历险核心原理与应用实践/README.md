@@ -58,7 +58,7 @@
 
 ### [3.1 主从同步](./BOOK-3.md#31-主从同步)
 
-### [3.2 Sentinel]()
+### [3.2 Sentinel](./BOOK-3.md#32-Sentinel)
 
 ### [3.3 Codis]()
 
