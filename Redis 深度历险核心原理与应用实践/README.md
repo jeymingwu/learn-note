@@ -62,7 +62,7 @@
 
 ### [3.3 Codis](./BOOK-3.md#33-Codis)
 
-### [3.4 Cluster]()
+### [3.4 Cluster](./BOOK-3.md#34-Cluster)
 
 ## [第四篇：拓展篇]()
 
