@@ -4,7 +4,7 @@
     +  SqlSession 执行过程；
 
 ## 6.1 涉及技术
-+ 反射 [demo](../src/main/java/mybatis/reflect/ReflectHelloServiceDemo.java)
++ 反射 [demo](./src/main/java/mybatis/reflect/ReflectHelloServiceDemo.java)
 + 动态代理：Mapper 执行器仅仅是接口，不包含逻辑的实现类，它是通过动态代理去实现其逻辑功能；
     + 代理模式：
         + 定义：在原有的服务上多加一个占位，通过这个占位去控制服务的访问；
@@ -13,8 +13,8 @@
         +  由 java.lang.reflect.* 包提供支持；
         +  步骤：
             +  编写服务类和接口；
-            +  编写代理类，主要提供绑定和代理方法；需要实现 InvocationHandler 接口的代理方法；[JDK代理类Demo](../src/main/java/mybatis/reflect/proxy/HelloServiceJdkProxy.java)
-    + **CGLIB 动态代理（不需要接口）**：实现 MethodInterceptor 的代理方法；[CgLib代理类Demo](../src/main/java/mybatis/reflect/proxy/HelloServiceCgLibProxy.java)
+            +  编写代理类，主要提供绑定和代理方法；需要实现 InvocationHandler 接口的代理方法；[JDK代理类Demo](./src/main/java/mybatis/reflect/proxy/HelloServiceJdkProxy.java)
+    + **CGLIB 动态代理（不需要接口）**：实现 MethodInterceptor 的代理方法；[CgLib代理类Demo](./src/main/java/mybatis/reflect/proxy/HelloServiceCgLibProxy.java)
         +  在 MyBatis 中通常在延迟加载的时候才使用；
         
 ## 6.2 构建 SqlSessionFactory 过程
@@ -56,7 +56,7 @@
             +  parameterMappings：List，每个元素都是 parameterMapping 对象【描述参数：属性、名称、表达式、javaType、jdbcType、typeHandler等】；
             +  sql：映射器中的 SQL 语句；
 
-![映射器的内部组成](./picture/mybatis-mapper.png)
+![映射器的内部组成](./img/mybatis-mapper.png)
 
 映射器的内部组成
 
@@ -92,6 +92,6 @@ sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
             + setParameters(PreparedStatement ps)：设置预编译 SQL 语句参数；
     + ResultHandler：结果处理器，对数据集 ResultSet 的封装返回处理；
     
-![SqlSession 内部运行图](./picture/sqlsession-executor.png)
+![SqlSession 内部运行图](./img/sqlsession-executor.png)
 
 SqlSession 内部运行图

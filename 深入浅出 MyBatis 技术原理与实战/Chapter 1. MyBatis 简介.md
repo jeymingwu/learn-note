@@ -1,7 +1,7 @@
 #  MyBatis 简介
 
 ## 传统 JDBC 编程
-[传统 JDBC 编程 demo](../src/main/java/mybatis/jdbc/JdbcExample.java)
+[传统 JDBC 编程 demo](./src/main/java/mybatis/jdbc/JdbcExample.java)
 
 大致步骤：
 +  连接数据库，注册驱动和数据库信息；

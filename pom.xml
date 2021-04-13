@@ -12,6 +12,7 @@
         <module>Redis 深度历险核心原理与应用实践</module>
         <module>article-note</module>
         <module>SQL 必知必会</module>
+        <module>深入浅出 MyBatis 技术原理与实战</module>
     </modules>
 
     <properties>

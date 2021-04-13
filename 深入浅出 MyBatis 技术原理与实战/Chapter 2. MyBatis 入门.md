@@ -6,7 +6,7 @@
 
 ## 2.2 MyBatis 的基本构成
 
-![MyBatis 的构成](./picture/mybatis-build.png)
+![MyBatis 的构成](./img/mybatis-build.png)
 
 +  概况：
     +  **SqlSessionFactoryBuilder** 构造器：
@@ -34,7 +34,7 @@
         +  MyBatis 配置信息的 XML 文件保存于 Configuration 类对象中；
         +  以单例的形式存在；
     
-![SqlSessionFactory 实现类的关系图](./picture/sqlsessionfactory-relation.png)
+![SqlSessionFactory 实现类的关系图](./img/sqlsessionfactory-relation.png)
 
 +  SqlSession：    
     +  类似 JDBC 中的 Connection 对象；
@@ -69,6 +69,6 @@
     +  JDBC中的 Connection 对象，生命周期应该是在请求数据库处理事务的过程中；使用完应关闭；【线程不安全，多线程操作数据库时需注意隔离界别、数据库锁等高级特性】
 +  Mapper：接口，无实现类，作用是发送 SQL 并返回结果，生命周期应与 SqlSession 事务方法之内；
 
-![MyBatis 组件的生命周期](./picture/mybatis-lifecycle.png)
+![MyBatis 组件的生命周期](./img/mybatis-lifecycle.png)
 
 ## 2.4 实例
