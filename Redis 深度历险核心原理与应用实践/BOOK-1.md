@@ -120,6 +120,7 @@
 # 取值
 > hget hash key1
 > hgetall hash #entries(), key 和 value 间隔出现
+> hexists hash key #判断 hash 中是否存在 key
 
 # 计数（与 string 一样可对 hash 中单个子 key 进行操作）
 > hlen hash #统计 hash 中有多少个元素
@@ -127,6 +128,10 @@
 > hincrby hash key number #hash 中 key 的 value 加上 number
 > hdecr hash key #hash 中 key 的 value 自减
 > hdecrby hash key number #hash 中 key 的 value 减去 number
+
+# 删除数据
+> hdel hash key #删除 hash 下的 key
+> del hash #删除整个 hash
 ```
 
 #### set 集合
@@ -149,6 +154,11 @@
 > sismember key value1 #判断某个元素是否存在
 
 > scard key #获取当前 set 的元素的个数
+
+# 集合运算
+> sdiff set1 set2 #集合的差集
+> sinter set1 set2 #集合的交集
+> sunion set1 set2 #集合的并集
 ```
 
 #### zset 有序集合
