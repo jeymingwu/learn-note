@@ -13,6 +13,7 @@
         <module>article-note</module>
         <module>SQL 必知必会</module>
         <module>深入浅出 MyBatis 技术原理与实战</module>
+        <module>SpringBoot 编程思想</module>
     </modules>
 
     <properties>
