@@ -2,7 +2,7 @@
 
 ## 第一部分 总览 SpringBoot
 
-### 第一章 初览 SpringBoot
+### 1.初览 SpringBoot
 
 + SpringBoot 的特性
     + Create stand-alone Spring application
@@ -19,12 +19,12 @@
     + 提供运维特性，如指标信息、健康检查和外部化配置；
     + 无代码生成，无 XML 配置；
 
-### [第二章 理解独立的 Spring 应用]()
+### [2.理解独立的 Spring 应用]()
 
-### [第三章 理解固化的 Maven 依赖]()
+### [3.理解固化的 Maven 依赖]()
 
-### [第四章 理解嵌入式 Web 容器]()
+### [4.理解嵌入式 Web 容器]()
 
-### [第五章 理解自动装配]()
+### [5.理解自动装配]()
 
-### [第六章 理解 Production-Ready 特性]()
+### [6.理解 Production-Ready 特性]()
