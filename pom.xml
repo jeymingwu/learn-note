@@ -14,6 +14,7 @@
         <module>SQL 必知必会</module>
         <module>深入浅出 MyBatis 技术原理与实战</module>
         <module>SpringBoot 编程思想</module>
+        <module>精通Spring 4.x 企业应用开发实战</module>
     </modules>
 
     <properties>
