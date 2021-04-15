@@ -64,4 +64,16 @@ Spring 的体系结构
     + PO：Persistent Object，持久化对象，表示持久层的数据结构；
 + 领域对象一般实现 Serializable 接口，以便可以序列化；
 
-### [3.Spring Boot]()
+### 3.Spring Boot
+
++ Spring Boot：
+    + 简化 Spring 的配置；
+    + 用于创建和启用基于 Spring 框架的项目；
+    + 特性：
+        + 为开发者提供 Spring 快速入门体验；
+        + 内置 Tomcat 和 Jetty 容器，不需部署 WAR 文件到 Web 容器就可独立运行；
+        + 提供许多基于 Maven 的 pom 配置模版来简化工程配置；
+        + 提供实现自动化配置的基础设施；
+        + 提供可直接在生产环境中使用的功能，如性能指标、应用信息和应用健康检查等；
+        + 开箱即用，没有代码生成，也没有 XML 配置文件；
++ Spring Boot 启动器：spring-boot-starter-xxx 
