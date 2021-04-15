@@ -53,6 +53,15 @@ Spring 的体系结构
     + 支持 WebSocket
     + 测试增强
 
-### [2.快速入门]()
+### 2.快速入门
+
+(内容较基础简单，后补^……^)
+
++ 领域模型实例类细分四种类型：
+    + VO：View Object，视图对象，视图层视图状态对应的对象；
+    + DTO：Data Transfer Object，数据传输对象；（视图层与业务层之间的数据传输对象）
+    + DO：Domain Object，领域对象（业务实体对象）；
+    + PO：Persistent Object，持久化对象，表示持久层的数据结构；
++ 领域对象一般实现 Serializable 接口，以便可以序列化；
 
 ### [3.Spring Boot]()
