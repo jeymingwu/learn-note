@@ -6,7 +6,7 @@
 
 ### [2.快速入门](./BOOK-1.md#2快速入门)
 
-### [3.Spring Boot]()
+### [3.Spring Boot](./BOOK-1.md#3Spring-Boot)
 
 ## [第二部分 核心篇]()
 
