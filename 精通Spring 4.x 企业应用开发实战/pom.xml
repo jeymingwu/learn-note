@@ -11,5 +11,14 @@
 
     <artifactId>精通Spring 4.x 企业应用开发实战</artifactId>
 
+    <dependencies>
+        <!-- https://mvnrepository.com/artifact/org.springframework/spring-core -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>4.3.30.RELEASE</version>
+        </dependency>
+
+    </dependencies>
 
 </project>

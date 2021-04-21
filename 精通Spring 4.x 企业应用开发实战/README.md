@@ -8,9 +8,9 @@
 
 ### [3.Spring Boot](./BOOK-1.md#3Spring-Boot)
 
-## [第二部分 核心篇]()
+## [第二部分 核心篇](./BOOK-2.md#第二部分-核心篇)
 
-### [4.IoC 容器]()
+### [4.IoC 容器](./BOOK-2.md#4IoC-容器)
 
 ### [5.在 IoC 容器中装配 Bean]()
 
