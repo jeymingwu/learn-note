@@ -267,11 +267,11 @@ WebApplicationContext 类继承体系
     + Bean 的作用范围；
     + 实例化 Bean 经历的一系列阶段；
 
+##### 4.5.1 BeanFactory 中 Bean 的生命周期
+
 ![BeanFactory 中 Bean 的生命周期](./img/ioc-beanfactory-lifecycle.png)
 
 BeanFactory 中 Bean 的生命周期
-
-##### 4.5.1 BeanFactory 中 Bean 的生命周期
 
 + Bean 生命周期具体的过程：
     1. 调用 getBean(name) 向容器请求 Bean，若容器注册了 org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor 接口，则在 Bean 实例化前调用该接口的 postProcessBeforeInstantiation() 方法；
@@ -291,11 +291,27 @@ BeanFactory 中 Bean 的生命周期
 + Bean 生命周期调用方法的大致划分：
     + Bean 自身方法：如构造函数实例化 Bean（2）、调用 setter 设置属性值（5）、调用 init-method 指定的方法（10）、调用 destroy-method 指定的方法（14）；
     + Bean 生命周期接口方法：BeanNameAware（6）、BeanFactoryAware（7）、InitializingBean（9）、DisposableBean（13）；（个性）
-    + 容器级生命周期接口方法：InstantiationAwareBeanPostProcessor（1、3、4）、BeanPostProcessor（8、11）；（共性）
+    + 容器级生命周期接口方法：（后处理器）InstantiationAwareBeanPostProcessor（1、3、4）、BeanPostProcessor（8、11）；（共性）
     + 工厂后处理器接口方法：AspectJWeavingEnabler、CustomAutowireConfigurer、ConfigurationClassPostProcessor 等，在应用上下文装配配置文件后立即调用；
++ [BeanFactory 中 Bean 生命周期的演示 Demo](./src/main/java/com/example/lifecycle/beanfactory/BeanFactoryLifeCycleDemo.java)
++ 注意事项：
+    + 注册多个后处理器问题，后处理器需实现 org.springframework.core.Ordered 接口，需指定依次调用的顺序；
+    + 后处理器中，InstantiationAwareBeanPostProcessor 是 BeanPostProcessor 接口的子接口，适配类：InstantiationAwareBeanPostProcessorAdapter；
+    + 为了业务代码与 Spring 框架解耦，实际上初始化或销毁 Bean 时可通过实现 init-method 和 destroy-method 属性来配置，效果与实现 InitializingBean 和 DisposableBean 接口一致；
+    + 后置处理器 InitDestroyAnnotationBeanPostProcessor，负责处理标注 @PostConstruct、@PreDestroy 的 Bean；
+    + 实际开发中几乎可以忽略上述接口，除非编写 Spring 子项目或在其之上的插件；（实现额外功能）
 
 ##### 4.5.2 ApplicationContext 中 Bean 的生命周期
 
+![ApplicationContext 中 Bean 的生命周期](./img/ioc-applicationcontext-lifecycle.png)
+
+ApplicationContext 中 Bean 的生命周期
+
++ ApplicationContext 中 Bean 的生命周期与 BeanFactory 的几乎一致；
++ 在 Bean 生命周期中 ApplicationContext 与 BeanFactoryContext 的不同：
+    + 在 ApplicationContext 中，若 Bean 实现 org.springframework.context.ApplicationContextAware 接口，则增加一个调用 setApplicationContext() 接口方法的步骤；
+    + ApplicationContext 会利用 Java 反射机制自动识别出配置文件中定义的 BeanPostProcessor、InstantiationAwareBeanPostProcessor 和 BeanFactoryPostProcessor，并自动注册到应用上下文；而 BeanFactory 需调用 addBeanPostProcessor() 进行手动注册；（ApplicationContext 只需配置好就可以自动运行）
++ [ApplicationContext 中 Bean 生命周期的演示 Demo](./src/main/java/com/example/lifecycle/applicationcontext/ApplicationContextLifeCycleDemo.java) 
 
 ### [5.在 IoC 容器中装配 Bean]()
 

@@ -11,12 +11,30 @@
 
     <artifactId>精通Spring 4.x 企业应用开发实战</artifactId>
 
+    <properties>
+        <spring4.version>4.3.30.RELEASE</spring4.version>
+    </properties>
+
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.springframework/spring-core -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
-            <version>4.3.30.RELEASE</version>
+            <version>${spring4.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework/spring-context -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring4.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework/spring-beans -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>${spring4.version}</version>
         </dependency>
 
     </dependencies>
