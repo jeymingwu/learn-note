@@ -313,7 +313,161 @@ ApplicationContext 中 Bean 的生命周期
     + ApplicationContext 会利用 Java 反射机制自动识别出配置文件中定义的 BeanPostProcessor、InstantiationAwareBeanPostProcessor 和 BeanFactoryPostProcessor，并自动注册到应用上下文；而 BeanFactory 需调用 addBeanPostProcessor() 进行手动注册；（ApplicationContext 只需配置好就可以自动运行）
 + [ApplicationContext 中 Bean 生命周期的演示 Demo](./src/main/java/com/example/lifecycle/applicationcontext/ApplicationContextLifeCycleDemo.java) 
 
-### [5.在 IoC 容器中装配 Bean]()
+### 5.在 IoC 容器中装配 Bean
+
+#### 5.1 Spring 配置概述
+
+##### 5.1.1 Spring 容器高层视图
+
++ 成功启动 Spring 容器的三方面条件：
+    + Spring 框架的类包；
+    + Spring 下 Bean 的配置信息；
+    + Bean 类的实现；
++ Bean 的配置信息（又称“Bean 的元数据信息”）：
+    + Bean 的实现类；
+    + Bean 的属性信息；
+    + Bean 的依赖关系；
+    + Bean 的行为配置，如生命周期范围及生命周期各过程的回调函数等；
++ Spring 支持多种形式的 Bean 配置方式：
+    + Spring 1.0：支持基于 XML 的配置；
+    + Spring 2.0：支持基于注解配置的支持；
+    + Spring 3.0：支持基于 Java 类配置的支持；
+    + Spring 4.0：支持基于 Groovy 动态语言的配置的支持；
+    
+![Spring 容器、Bean 配置信息、Bean 实现类以及应用程序之间相互的关系](./img/spring-ioc.png)
+
+Spring 容器、Bean 配置信息、Bean 实现类以及应用程序之间相互的关系
+
+##### 5.1.2 基于 XML 的配置信息
+
++ XML 配置：Spring 1.0 采用 DTD 格式，Spring 2.0 采用 Schema 格式（配置简化、但声明头复杂）；
++ Schema 的命名空间声明：
+    + 默认命名空间；
+    + xsi 标准命名空间；
+    + xxx 命名空间，如 aop 等，属自定义命名空间；
++ 指定命名空间的 Schema 文件地址的用途：
+    + XML 解析器对文档格式合法性验证；
+    + IDE 自动补全功能；
+    
+![XML 配置文件示例](./img/spring-ioc-xml.png)
+
+XML 配置文件示例
+
+![Spring 4.0 的 Schema 文件](./img/spring-ioc-xml-schema.png)
+
+Spring 4.0 的 Schema 文件
+
+#### 5.2 Bean 基本配置
+
++ <bean id="" name="" class=""/>
+    + id：Bean 的名称；
+        + IoC 容器中唯一；
+        + 命名规范：必须以字母开始，后可接字母、数字、连字符、下划线、句号、冒号等完整结束的符号；
+        + 若需要使用特殊字符，可使用 name 属性；
+    + name：Bean 的名称
+        + 命名可重复，若重复则使用最后命名那个 Bean；（前面被覆盖）
+        + 可使用任何字符；
+        + 可设置多个并使用逗号隔开；
+        + 若 bean 中，id 和 name 均没有设定，则 Spring 自动将全限定类名作为 Bean 的名称；
+    + class：Bean 的实现类
+
+#### 5.3 依赖注入
+
++ 属性注入：
+    + <bean><property name="" value=""/></bean>
+    + 通过 setter 方式注入 Bean 的属性值或依赖对象；
+    + 优点：具有可选择性和灵活性高；
+    + 注意：Spring 只检查 Bean 中是否有对应的 setter 方法，不要求是否有对应的属性成员；
++ 构造函数注入：
+    + 按类型匹配入参：
+        + <bean><constructor-arg type="Class" value=""/></bean>
+        + 因为 Spring 配置文件采用和元素标签顺序无关的策略；
+        + 若存在多个相同类型的属性，则不适用；
+    + 按索引匹配入参：
+        + <bean><constructor-arg index="0" value=""/></bean>
+        + 较准确，在存在相同类型的参数时可用；
+        + 若存在多个入参个数相同的构造函数，则不适用；
+    + 联合使用类型和所用匹配入参：
+        + <bean><constructor-arg index="0" type="Class" value=""/></bean>
+        + 解决上面两种方式的缺陷；
+    + 通过自身类型反射匹配入参：
+        + <bean><constructor-arg value=""/></bean>
+        + 适用于入参类型是可辨别的构造函数；
+    + 循环依赖问题：
+        + 构造函数注入的前提条件：入参引用对象必须已经实例初始化；
+        + 解决：使用 setter 属性注入；
++ 工厂方法注入：
+    + 非静态工厂方法：
+        + 先定义工厂类 Bean：<bean id="xxx-factory" class="xxx-factory">
+        + 定义实体类 Bean（由非静态工厂方法创建）：<bean id="bean" factory-bean="xxx-factory" factory-method="createBean"/>
+    + 静态工厂方法：
+        + 因静态工厂，可无需定义工厂类的 Bean；
+        + 定义实体类 Bean（由静态工厂方法创建）：<bean id="bean" class="com.example.xxx-factory" factory-method="createBean"/>
+
+#### 5.4 注入参数详解
+
++ 在 Spring 配置文件中，除可将 String、int 等字面值注入 Bean 中，还可以注入集合、Map、其他定义的 Bean 等类型的数据；
++ 字面值：
+    + 指可用字符串表示的值；
+    + 通过标签 value 注入；
+    + Spring 容器内部为字面值提供编辑器，可将字符串转换成内部变量相应类型；也可自定义编辑器；
+    + 特殊字符的处理：
+        + 特殊字符可能会对 XML 的格式造成破坏，需特殊处理；
+        + 方法一：<![CDATA[]]> 标签；可将标签内的字符串当成普通文本对待；
+        + 方法二：将特殊字符转换成转义字符；
+        + XML 特殊字符与转义字符：
+            + “&”：“&amp;”
+            + “<”：“&lt;”
+            + “>”：“&gt;”
+            + “"”：“&quot;”
+            + “'”：“&apos;”
++ 引用其他 Bean：
+    + Spring IoC 容器中定义的 Bean 可以互相引用；
+    + ref 标签：
+        + bean：可引用同一容器或父容器中的 Bean，最常见形式；
+        + local：只能引用同一配置文件中定义的 Bean，XML 解析器可自动检测引用合法性；
+        + parent：引用父容器的 Bean; [Demo](./src/main/java/com/example/bean/ParentBeanDemo.java)
++ 内部 Bean：
+    + 该 Bean 只能被 property 属性概括的父 Bean 引用；
+    + 与 Java 匿名内部类相似；
+    + scope 默认为 prototype 类型；
++ 设置 null 值：<![CDATA[<null/>]]>
++ 级联属性：
+    + 直接为对象的属性提供注入值，可直接使用圆点（.），如 object.xxx 等；
+    + 注意：需在 Bean 初始化时将该对象实例化；Spring 没有限制层级数；
++ 集合类型属性：
+    + List 集合：<list><value/></list>
+    + Set 集合：<set><value/></set>
+    + Map 集合：<map><entry><key><value/></key><value></value></entry>
+    + Properties：Map 类型特例；<prop key="key">value</prop>
+    + 强类型集合
+    + 集合合并：先在父 Bean 标签中设置 abstract="true"，再在子 Bean 标签中设置 parent="" 父 Bean 的 ID，最后在集合标签中设置 merge="true"；
+    + 通过 util 命名空间配置集合类型：
+        + List 集合：<util:list></util:list>
+        + set 集合：<util:set></util:set>
+        + Map 集合：<util:map><entry key="" value=""/></util:map>
++ 简化配置方式：
+    + 字面值属性：
+        + 字面值属性：<property name="" value=""/>
+        + 构造函数参数：<construct-arg type="" value=""/>
+        + 集合元素：<map><entry key="" value=""/></map>
+    + 引用对象属性：
+        + 字面值属性：<property name="" ref=""/>
+        + 构造函数参数：<construct-arg ref=""/>
+        + 集合元素：<map><entry key-ref="" value-ref=""/></map>
+    + p 命名空间：
+        + 字面值：p:xxx=""
+        + 引用对象：p:xxx-ref=""
++ 自动装配：
+    + Spring IoC 容器根据 Java 反射机制获取实现类的结构信息，如构造函数、属性等信息；
+    + 根据获取到的结构信息，可进行自动装配；
+    + 四种装配类型：
+        + byName：根据名称自动匹配；
+        + byType：根据类型自动匹配；
+        + constructor：与 byType 类似，针对构造函数；
+        + autodetect：根据 Bean 的自省机制决定采用 byType 或者是 constructor 进行自动装配；
+    + bean 标签中属性 default-autowire 可以配置是否开启全局自动匹配，默认 no 不开启，可选上面四种类型；
+
 
 ### [6.Spring 容器高级主题]()
 
