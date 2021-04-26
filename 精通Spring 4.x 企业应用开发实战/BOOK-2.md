@@ -468,6 +468,101 @@ Spring 4.0 的 Schema 文件
         + autodetect：根据 Bean 的自省机制决定采用 byType 或者是 constructor 进行自动装配；
     + bean 标签中属性 default-autowire 可以配置是否开启全局自动匹配，默认 no 不开启，可选上面四种类型；
 
+#### 5.5 方法注入：
+
++ 背景：实现 Bean 的 scope=“singleton”，但每次 Bean#getXXX() 都获取一个全新的对象；
++ 方式一：实现 BeanFactoryAware 接口，且能够访问容器的引用； getXXX() 就可以实现 factory.getBean("xxx") 达到目的； 
++ lookup 方法注入：
+    + 依赖 CGLib 包；
+    + 需声明一个接口，然后在 XML 配置文件中为该接口提供动态的实现；
++ 方法替换：
+    + 替换的方法该类需实现 Spring 中 org.springframework.beans.factory.support.MethodReplacer 接口的 reimplement() 方法；
+    + 在 XML 配置文件中，在被替换方法的 bean 中加上 <replace-method name="被替换方法的名称" replace="替换方法的 bean"/>
+
+#### 5.6 bean 之间的关系
+
++ 继承：父 Bean 标签中将 abstract 设置为 true；子 Bean 中添加 parent="" 指向父 Bean；
++ 依赖：
+    + ref 元素标签建立；
+    + 实例化 Bean 时，其依赖的 Bean 需已经完成实例化；
+    + 前置依赖：depends-on 属性显式指定 Bean 的前置依赖 Bean，前置依赖的 Bean 将会在本 Bean 实例化前创建好；
++ 引用：一个 Bean 需引用另一个 Bean 的属性值：<property name=""><idref bean="" /></property>
+
+```xml
+<!-- lookup 的实现 -->
+<!-- prototype 下的 bean-->
+<bean id="xxObject" class="java.lang.xx.XXObject" p:id="1" p:name="name1" scope="prototype"/>
+<!-- 实施方法注入 -->
+<bean id="iMethod" class="com.example.interface.IMethod">
+    <lookup-method name="getXXX" bean="xxObject"/>
+</bean>
+```
+
+#### 5.7 整合多个配置文件：<import resource=""> 标签
+
+#### 5.8 Bean 的作用域
+
++ 作用域类型：
+    + singleton：Bean 以单例的形式存在；
+        + 容器启动时，自动实例化所有 singleton 的 Bean 并缓存于容器中；
+        + 好处：
+            + Bean 前提实例化操作会发现潜在配置问题；
+            + Bean 以缓存方式保存，当运行时就无需实例化，提高运行效率；
+        + 若不需容器启动时提前实例化 singleton 的 Bean，可使用 lazy-init 属性控制；（若该 Bean 需被其他提前实例化的 Bean 引用，那么忽略该设置）
+    + prototype：每次调用 Bean 时均是一个新的实例；
+    + request：每次 HTTP 请求时会创建一个新的 Bean；
+    + session：同一个 HTTP Session 共享一个 Bean，不同 HTTP Session 使用不同的 Bean；
+    + globalSession：同一个全局 Session 共享一个 Bean，一般用于 Portlet 应用环境；
++ 可自定义作用域，
+    + 自定义的作用域（类）需实现 org.springframework.beans.factory.config.Scope 接口；
+    + 然后通过 org.springframework.beans.factory.config.CustomScopeConfigurer 这个 BeanFactoryPostProcessor 注册自定义 Bean 的作用域；
++ 与 Web 应用环境相关的 Bean 作用域
+    + 使用前需在 web 容器中配置：
+        + 低版本（Servlet 2.3 前）:可使用 HTTP 请求过滤器配置；
+        + 高版本：使 HTTP 请求监听器配置；
+    + ContextLoaderListener 与 RequestContextListener： Web 容器与 Spring 容器进行整合
+        + ContextLoaderListener：
+            + 实现 ServletContextListener 监听器接口；
+            + 负责监听 Web 容器启动和关闭事件；
+        + RequestContextListener：
+            + 实现 ServletRequestListener 监听器接口；
+            + 负责监听 HTTP 请求事件，Web 服务器接收的每一次请求都会通知监听器；
+            + 支持 Bean 另外 3 个作用域的原因：
+                + request、session、globalSession 这三个作用域控制逻辑需 HTTP 请求事件驱动；
+        + 两者分开的原因：考虑版本兼容问题；三个新增作用域适用场景不多；
+
+```xml
+<web-app>
+<!-- 低版本 -->
+<filter>
+    <filter-name>requestContextFilter</filter-name>
+    <filter-class>org.springframework.web.filter.RequestContextFilter</filter-class>
+</filter>
+<filter-mapping>
+    <filter-name>requestContextFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+</filter-mapping>
+
+<!-- 高版本 -->
+<listener>
+    <listener-class>
+        org.springframework.web.context.request.RequestContextListener
+    </listener-class>
+</listener>
+</web-app>
+```
+
+#### 5.9 FactoryBean
+
+#### 5.10 基于注解的配置
+
+#### 5.11 基于 Java 类的配置
+
+#### 5.12 基于 Groovy DSL 的配置
+
+#### 5.13 通过编码方式动态添加 Bean
+
+#### 5.14 不同配置方式比较
 
 ### [6.Spring 容器高级主题]()
 
