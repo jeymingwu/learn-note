@@ -381,29 +381,29 @@ Spring 4.0 的 Schema 文件
     + 注意：Spring 只检查 Bean 中是否有对应的 setter 方法，不要求是否有对应的属性成员；
 + 构造函数注入：
     + 按类型匹配入参：
-        + <bean><constructor-arg type="Class" value=""/></bean>
+        + ```<bean><constructor-arg type="Class" value=""/></bean>```
         + 因为 Spring 配置文件采用和元素标签顺序无关的策略；
         + 若存在多个相同类型的属性，则不适用；
     + 按索引匹配入参：
-        + <bean><constructor-arg index="0" value=""/></bean>
+        + ```<bean><constructor-arg index="0" value=""/></bean>```
         + 较准确，在存在相同类型的参数时可用；
         + 若存在多个入参个数相同的构造函数，则不适用；
     + 联合使用类型和所用匹配入参：
-        + <bean><constructor-arg index="0" type="Class" value=""/></bean>
+        + ```<bean><constructor-arg index="0" type="Class" value=""/></bean>```
         + 解决上面两种方式的缺陷；
     + 通过自身类型反射匹配入参：
-        + <bean><constructor-arg value=""/></bean>
+        + ```<bean><constructor-arg value=""/></bean>```
         + 适用于入参类型是可辨别的构造函数；
     + 循环依赖问题：
         + 构造函数注入的前提条件：入参引用对象必须已经实例初始化；
         + 解决：使用 setter 属性注入；
 + 工厂方法注入：
     + 非静态工厂方法：
-        + 先定义工厂类 Bean：<bean id="xxx-factory" class="xxx-factory">
-        + 定义实体类 Bean（由非静态工厂方法创建）：<bean id="bean" factory-bean="xxx-factory" factory-method="createBean"/>
+        + 先定义工厂类 Bean：```<bean id="xxx-factory" class="xxx-factory">```
+        + 定义实体类 Bean（由非静态工厂方法创建）：```<bean id="bean" factory-bean="xxx-factory" factory-method="createBean"/>```
     + 静态工厂方法：
         + 因静态工厂，可无需定义工厂类的 Bean；
-        + 定义实体类 Bean（由静态工厂方法创建）：<bean id="bean" class="com.example.xxx-factory" factory-method="createBean"/>
+        + 定义实体类 Bean（由静态工厂方法创建）：```<bean id="bean" class="com.example.xxx-factory" factory-method="createBean"/>```
 
 #### 5.4 注入参数详解
 
@@ -437,25 +437,25 @@ Spring 4.0 的 Schema 文件
     + 直接为对象的属性提供注入值，可直接使用圆点（.），如 object.xxx 等；
     + 注意：需在 Bean 初始化时将该对象实例化；Spring 没有限制层级数；
 + 集合类型属性：
-    + List 集合：<list><value/></list>
-    + Set 集合：<set><value/></set>
-    + Map 集合：<map><entry><key><value/></key><value></value></entry>
-    + Properties：Map 类型特例；<prop key="key">value</prop>
+    + List 集合：```<list><value/></list>```
+    + Set 集合：```<set><value/></set>```
+    + Map 集合：```<map><entry><key><value/></key><value></value></entry>```
+    + Properties：Map 类型特例；```<prop key="key">value</prop>```
     + 强类型集合
     + 集合合并：先在父 Bean 标签中设置 abstract="true"，再在子 Bean 标签中设置 parent="" 父 Bean 的 ID，最后在集合标签中设置 merge="true"；
     + 通过 util 命名空间配置集合类型：
-        + List 集合：<util:list></util:list>
-        + set 集合：<util:set></util:set>
-        + Map 集合：<util:map><entry key="" value=""/></util:map>
+        + List 集合：```<util:list></util:list>```
+        + set 集合：```<util:set></util:set>```
+        + Map 集合：```<util:map><entry key="" value=""/></util:map>```
 + 简化配置方式：
     + 字面值属性：
-        + 字面值属性：<property name="" value=""/>
-        + 构造函数参数：<construct-arg type="" value=""/>
-        + 集合元素：<map><entry key="" value=""/></map>
+        + 字面值属性：```<property name="" value=""/>```
+        + 构造函数参数：```<construct-arg type="" value=""/>```
+        + 集合元素：```<map><entry key="" value=""/></map>```
     + 引用对象属性：
-        + 字面值属性：<property name="" ref=""/>
-        + 构造函数参数：<construct-arg ref=""/>
-        + 集合元素：<map><entry key-ref="" value-ref=""/></map>
+        + 字面值属性：```<property name="" ref=""/>```
+        + 构造函数参数：```<construct-arg ref=""/>```
+        + 集合元素：```<map><entry key-ref="" value-ref=""/></map>```
     + p 命名空间：
         + 字面值：p:xxx=""
         + 引用对象：p:xxx-ref=""
@@ -487,7 +487,7 @@ Spring 4.0 的 Schema 文件
     + ref 元素标签建立；
     + 实例化 Bean 时，其依赖的 Bean 需已经完成实例化；
     + 前置依赖：depends-on 属性显式指定 Bean 的前置依赖 Bean，前置依赖的 Bean 将会在本 Bean 实例化前创建好；
-+ 引用：一个 Bean 需引用另一个 Bean 的属性值：<property name=""><idref bean="" /></property>
++ 引用：一个 Bean 需引用另一个 Bean 的属性值：```<property name=""><idref bean="" /></property>```
 
 ```xml
 <!-- lookup 的实现 -->
