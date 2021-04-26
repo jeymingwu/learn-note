@@ -432,7 +432,7 @@ Spring 4.0 的 Schema 文件
     + 该 Bean 只能被 property 属性概括的父 Bean 引用；
     + 与 Java 匿名内部类相似；
     + scope 默认为 prototype 类型；
-+ 设置 null 值：<![CDATA[<null/>]]>
++ 设置 null 值：```<null/>```
 + 级联属性：
     + 直接为对象的属性提供注入值，可直接使用圆点（.），如 object.xxx 等；
     + 注意：需在 Bean 初始化时将该对象实例化；Spring 没有限制层级数；
@@ -478,7 +478,7 @@ Spring 4.0 的 Schema 文件
     + 需声明一个接口，然后在 XML 配置文件中为该接口提供动态的实现；
 + 方法替换：
     + 替换的方法该类需实现 Spring 中 org.springframework.beans.factory.support.MethodReplacer 接口的 reimplement() 方法；
-    + 在 XML 配置文件中，在被替换方法的 bean 中加上 <replace-method name="被替换方法的名称" replace="替换方法的 bean"/>
+    + 在 XML 配置文件中，在被替换方法的 bean 中加上 ```<replace-method name="被替换方法的名称" replace="替换方法的 bean"/>```
 
 #### 5.6 bean 之间的关系
 
@@ -499,7 +499,7 @@ Spring 4.0 的 Schema 文件
 </bean>
 ```
 
-#### 5.7 整合多个配置文件：<import resource=""> 标签
+#### 5.7 整合多个配置文件：```<import resource="">``` 标签
 
 #### 5.8 Bean 的作用域
 
