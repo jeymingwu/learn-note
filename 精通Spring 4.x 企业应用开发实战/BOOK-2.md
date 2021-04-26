@@ -359,22 +359,23 @@ Spring 4.0 的 Schema 文件
 
 #### 5.2 Bean 基本配置
 
-+ <bean id="" name="" class=""/>
-    + id：Bean 的名称；
-        + IoC 容器中唯一；
-        + 命名规范：必须以字母开始，后可接字母、数字、连字符、下划线、句号、冒号等完整结束的符号；
-        + 若需要使用特殊字符，可使用 name 属性；
-    + name：Bean 的名称
-        + 命名可重复，若重复则使用最后命名那个 Bean；（前面被覆盖）
-        + 可使用任何字符；
-        + 可设置多个并使用逗号隔开；
-        + 若 bean 中，id 和 name 均没有设定，则 Spring 自动将全限定类名作为 Bean 的名称；
-    + class：Bean 的实现类
+```<bean id="" name="" class=""/>```
+
++ id：Bean 的名称；
+    + IoC 容器中唯一；
+    + 命名规范：必须以字母开始，后可接字母、数字、连字符、下划线、句号、冒号等完整结束的符号；
+    + 若需要使用特殊字符，可使用 name 属性；
++ name：Bean 的名称
+    + 命名可重复，若重复则使用最后命名那个 Bean；（前面被覆盖）
+    + 可使用任何字符；
+    + 可设置多个并使用逗号隔开；
+    + 若 bean 中，id 和 name 均没有设定，则 Spring 自动将全限定类名作为 Bean 的名称；
++ class：Bean 的实现类
 
 #### 5.3 依赖注入
 
 + 属性注入：
-    + <bean><property name="" value=""/></bean>
+    + ```<bean><property name="" value=""/></bean>```
     + 通过 setter 方式注入 Bean 的属性值或依赖对象；
     + 优点：具有可选择性和灵活性高；
     + 注意：Spring 只检查 Bean 中是否有对应的 setter 方法，不要求是否有对应的属性成员；
