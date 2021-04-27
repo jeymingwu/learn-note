@@ -555,6 +555,17 @@ Spring 4.0 的 Schema 文件
 
 #### 5.9 FactoryBean
 
++ 实例化 Bean 的方式：
+    + 配置方式创建：通过反射机制利用 bean 标签的 class 属性指定实现类实例化 Bean；若实例化过程复杂，需提供大量配置信息，灵活性受限；
+    + 工厂创建：可实现 org.springframework.beans.factory.FactoryBean 工厂类接口，定制实现 Bean 的逻辑；
+        + 当 Bean 实现了 FactoryBean 接口，getBean() 返回的是 FactoryBean#getObject() 所返回的对象；（相当于代理了 getBean() 方法）
+        + 若需要获取 FactoryBean 的 Bean，获取时需在 beanName 前加“&”，如 getBean("&xxxFactoryBean");
+        + Spring 3.0 支持泛型，接口声明改为 FactoryBean<T>
+        + FactoryBean 三个接口方法：
+            + T getObject()：返回由 FactoryBean 创建的 Bean 实例；
+            + boolean isSingleton()：判断 FactoryBean 创建的 Bean 的作用域是否是 singleton；
+            + Class<T> getObjectType()：返回 FactoryBean 创建 Bean 的类型；
+
 #### 5.10 基于注解的配置
 
 #### 5.11 基于 Java 类的配置
