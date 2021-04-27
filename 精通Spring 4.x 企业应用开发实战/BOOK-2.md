@@ -568,6 +568,32 @@ Spring 4.0 的 Schema 文件
 
 #### 5.10 基于注解的配置
 
++ 注解定义 Bean：
+    + @Component：对 Bean 实体类进行标注；
+    + @Repository：对 DAO 实现类进行标注；
+    + @Service：对 Service 实现类进行标注；
+    + @Controller：对 Controller 实现类进行标注；
++ 扫描注解定义的 Bean：
+    + ```<context:component-scan base-package="xxx.xxx.XXXBean"/>``
+    + resource-pattern 属性：可按资源名称对基类包中的类进行过滤；
+    + 子标签：
+        + ```<context:include-filter>```：表示要包含目标类；
+        + ```<context:exclude-filter>```：表示要排除目标类；
+    + use-default-filters 属性：默认 true；表示默认会对标注 @Component、@Controller、@Service 以及 @Repository 的 Bean 进行扫描；
++ 自动装配 Bean
+    + 对属性进行标注：
+        + 通过 @Autowire 进行自动注入：默认通过按类型 byType 匹配的方式查找匹配 Bean；
+        + 使用 @Autowire 的 required 属性：默认为 false；表示没有匹配到 Bean 会抛出异常；true 表示忽略；
+        + 使用 @Qualifier 指定注入 Bean 的名称；
+    + 对类方法进行标注（对属性的 setter 方法标注，等同对该属性进行标注）（实际项目中建议采用）
+    + 对集合类进行标注：可将容器中匹配集合元素类型的所有 Bean 均注入；
+    + 对延迟依赖注入的支持：@Lazy + @Autowire；
+    + 对标准注解的支持：@Resource 和 @Inject（功能没有 @Autowire 丰富）
+    + Bean 的作用范围及生命过程方法：
+        + @Scope：显式指定 Bean 的作用范围；
+        + @PostConstruct：显式指定 Bean 启动时 init-method；
+        + @PreDestroy：显式指定 Bean 销毁时 destroy-method；
+
 #### 5.11 基于 Java 类的配置
 
 #### 5.12 基于 Groovy DSL 的配置
