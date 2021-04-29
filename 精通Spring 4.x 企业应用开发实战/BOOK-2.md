@@ -596,6 +596,24 @@ Spring 4.0 的 Schema 文件
 
 #### 5.11 基于 Java 类的配置
 
++ JavaConfig：Spring 子项目，通过 Java 类的方式提供 Bean 的定义信息；
++ @Configuration：标注类为 Spring 容器提供 Bean 定义的信息；
++ @Bean：标注类方法，表示 Bean 的定义信息（实例化逻辑）；
+    + bean 的名称默认 = 类方法的名称，也可通过 name 属性手动指定；
+    + 可添加 @Scope 注解表示 bean 的作用域；
++ 基于 Java 类的配置信息启动 Spring 容器:
+    1.直接通过 @Configuration 类启动 Spring 容器：
+        + 方式一：AnnotationConfigApplicationContext 类支持能够直接通过标注 @Configuration 的 Java 类启动 Spring 容器；
+        + ```ApplicationContext ac = new AnnotationConfigApplicationContext(Config.class);```
+        + 方式二：通过注册的方式加载多个 @Configuration 配置类，注册后需刷新容器；```ac.register(XXXConfig.class);ac.refresh();```
+        + 方式三：将多个配置类通过 @Import 组装到一个配置类，然后加载组装的配置类启动容器；
+    2. 通过 XML 配置文件引用 @Configuration 的配置：
+        1. 通过自动扫描 ```<context:component-scan base-package="" resource-pattern=-""/>```将配置类组装到 XML 配置文件中；
+        2. 通过 XML 配置文件启动 Spring 容器；
+    3. 通过 @Configuration 配置类引用 XML 配置信息：
+        1. 在 @Configuration 配置类中先通过 @ImportResource 引用 XML 配置文件；
+        2. 通过 @Autowire 将需要的 Bean 自动注入；
+
 #### 5.12 基于 Groovy DSL 的配置
 
 #### 5.13 通过编码方式动态添加 Bean
