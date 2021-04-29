@@ -616,6 +616,11 @@ Spring 4.0 的 Schema 文件
 
 #### 5.12 基于 Groovy DSL 的配置
 
++ Groovy：基于 JVM 敏捷开发语言；能与 Java 代码很好结合；
++ Spring 4.0 支持使用 Groovy DSL 定义 Bean 的配置信息，类似 XML，只是配置信息由 Groovy 脚本表达；
++ 详细的配置信息：略；
++ 为 Groovy 配置信息专门的 ApplicationContext 实现类：GenericGroovyApplicationContext； 
+
 #### 5.13 通过编码方式动态添加 Bean
 
 #### 5.14 不同配置方式比较
