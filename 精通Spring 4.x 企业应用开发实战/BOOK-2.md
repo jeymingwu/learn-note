@@ -623,7 +623,59 @@ Spring 4.0 的 Schema 文件
 
 #### 5.13 通过编码方式动态添加 Bean
 
-#### 5.14 不同配置方式比较
++ 通过 DefaultListableBeanFactory 实现：
+    1. 将要动态添加的 Bean 实现 BeanFactoryPostProcessor 接口的 postProcessBeanFactory() 方法；（主要在该方法实现）
+    2. DefaultListableBeanFactory 实现了 ConfigurableListableBeanFactory 接口，提供可扩展配置、循环枚举的功能，可通过该类实现 Bean 的动态注入；
+    3. 通过 BeanDefinitionBuilder 创建将需动态添加的 Bean 的定义；并设置属性；
+    4. 可通过 ConfigurableListableBeanFactory#registerBeanDefinition 注册 Bean；
+    4. 也可通过 ConfigurableListableBeanFactory#registerSingleton 注册 Bean；
++ 扩展自定义标签：
+    + 经历的步骤：
+        1. 采用 XSD 描述自定义标签的元素属性；
+        2. 编写 Bean 定义解析器；
+        3. 注册自定义标签解析器；
+        4. 绑定命名空间解析器；
+    + 详细操作步骤：略；
+    
+#### 5.14 定义 Bean 不同配置方式比较
+
++ 基于 XML 配置：
+    + Bean 定义：```<bean>``` 标签；
+    + Bean 名称：```<bean>``` 标签中 id 属性或 name 属性；
+    + Bean 注入：```<property>```标签、p 命名空间等；
+    + Bean 的生命过程方法：```<bean>``` 标签中的 init-method、destroy-method 属性；（最多只能一个）
+    + Bean 的作用范围：```<bean>``` 标签中的 scope 属性，默认 singleton；
+    + Bean 的延迟加载：```<bean>``` 标签中的 lazy-init 属性，默认 default，继承于 ```<beans>``` 的 default-lazy-init，默认为 false；
+    + 适用场景：
+        + Bean 实现类来源第三方类库，如 DataSource、JdbcTemplate 等，无法在类中标注注解；
+        + 命名空间的配置；
++ 基于注解配置：
+    + Bean 定义：@Component 注解（或衍型类 @Repository、@Service、@Controller等）；
+    + Bean 名称：@Component 注解的 value 属性；
+    + Bean 注入：通过 @Autowired 按类型匹配自动注入，也可 @Qualifier 按名称匹配；
+    + Bean 的生命过程方法：目标方法上标注 @PostConstruct 或 @PreDestroy 注解；（可定义多个）
+    + Bean 的作用范围：@scope 注解；
+    + Bean 的延迟加载：@Lazy 注解；
+    + 适用场景：
+        + 业务代码，可直接在类中使用基于注解的配置；
++ 基于 Java 类配置：
+    + Bean 定义：@Configuration 标注的 Java 类，通过 @Bean 标注的类方法；
+    + Bean 名称：@Bean 注解中 value 的属性；
+    + Bean 注入：通过 @Autowired 使方法入参绑定 Bean，也可通过调用配置类 @Bean 的类方法；
+    + Bean 的生命过程方法：@Bean 的 initMethod 或 destroyMethod 指定方法；（最多只能一个）
+    + Bean 的作用范围：在 @Bean 注解处加 @scope 注解；
+    + Bean 的延迟加载：在 @Bean 注解处加 @Lazy 注解；
+    + 适用场景：
+        + 适用于实例化的 Bean 逻辑较复杂；（优势：可通过代码方式控制 Bean 初始化整体逻辑）
++ 基于 Groovy DSL 配置：
+    + Bean 定义：Groovy 文件中通过 DSL 定义；
+    + Bean 名称：Groovy 文件中通过 DSL 定义；
+    + Bean 注入：比较灵活；
+    + Bean 的生命过程方法：通过 bean -> bean.initMethod 或 bean.destroyMethod 指定；（最多只能一个）
+    + Bean 的作用范围：通过 bean -> bean.scope 指定；
+    + Bean 的延迟加载：通过 bean -> bean.Lazy 指定；
+    + 适用场景：
+        + 适用于实例化的 Bean 逻辑较复杂；
 
 ### [6.Spring 容器高级主题]()
 
