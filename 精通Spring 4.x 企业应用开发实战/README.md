@@ -12,7 +12,22 @@
 
 ### [4.IoC 容器](./BOOK-2.md#4IoC-容器)
 
-### [5.在 IoC 容器中装配 Bean]()
+### [5.在 IoC 容器中装配 Bean](./BOOK-2.md#5在-ioc-容器中装配-bean)
+
++ [5.1 Spring 配置概述](./BOOK-2.md#51-spring-配置概述)
++ [5.2 Bean 基本配置](./BOOK-2.md#52-bean-基本配置)
++ [5.3 依赖注入](./BOOK-2.md#53-依赖注入)
++ [5.4 注入参数详解](./BOOK-2.md#54-注入参数详解)
++ [5.5 方法注入](./BOOK-2.md#55-方法注入)
++ [5.6 bean 之间的关系](./BOOK-2.md#56-bean-之间的关系)
++ [5.7 整合多个配置文件](./BOOK-2.md#57-整合多个配置文件import-resource-标签)
++ [5.8 Bean 的作用域](./BOOK-2.md#58-bean-的作用域)
++ [5.9 FactoryBean](./BOOK-2.md#59-factorybean)
++ [5.10 基于注解的配置](./BOOK-2.md#510-基于注解的配置)
++ [5.11 基于 Java 类的配置](./BOOK-2.md#511-基于-java-类的配置)
++ [5.12 基于 Groovy DSL 的配置](./BOOK-2.md#512-基于-groovy-dsl-的配置)
++ [5.13 通过编码方式动态添加 Bean](./BOOK-2.md#513-通过编码方式动态添加-bean)
++ [5.14 定义 Bean 不同配置方式比较](./BOOK-2.md#514-定义-bean-不同配置方式比较)
 
 ### [6.Spring 容器高级主题]()
 

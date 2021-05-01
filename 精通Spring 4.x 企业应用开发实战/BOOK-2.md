@@ -574,7 +574,7 @@ Spring 4.0 的 Schema 文件
     + @Service：对 Service 实现类进行标注；
     + @Controller：对 Controller 实现类进行标注；
 + 扫描注解定义的 Bean：
-    + ```<context:component-scan base-package="xxx.xxx.XXXBean"/>``
+    + ```<context:component-scan base-package="xxx.xxx.XXXBean"/>```
     + resource-pattern 属性：可按资源名称对基类包中的类进行过滤；
     + 子标签：
         + ```<context:include-filter>```：表示要包含目标类；
@@ -602,7 +602,7 @@ Spring 4.0 的 Schema 文件
     + bean 的名称默认 = 类方法的名称，也可通过 name 属性手动指定；
     + 可添加 @Scope 注解表示 bean 的作用域；
 + 基于 Java 类的配置信息启动 Spring 容器:
-    1.直接通过 @Configuration 类启动 Spring 容器：
+    1. 直接通过 @Configuration 类启动 Spring 容器：
         + 方式一：AnnotationConfigApplicationContext 类支持能够直接通过标注 @Configuration 的 Java 类启动 Spring 容器；
         + ```ApplicationContext ac = new AnnotationConfigApplicationContext(Config.class);```
         + 方式二：通过注册的方式加载多个 @Configuration 配置类，注册后需刷新容器；```ac.register(XXXConfig.class);ac.refresh();```
