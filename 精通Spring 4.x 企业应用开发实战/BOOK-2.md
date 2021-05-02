@@ -677,7 +677,81 @@ Spring 4.0 的 Schema 文件
     + 适用场景：
         + 适用于实例化的 Bean 逻辑较复杂；
 
-### [6.Spring 容器高级主题]()
+### 6.Spring 容器高级主题
+
+#### 6.1 Spring 内部结构与运行机制
+
+![Spring IoC 工作流程](./img/ioc-working-process.png)
+
+Spring IoC 工作流程
+
++ 内部工作机制：
+    + AbstractApplicationContext 是 ApplicationContext 的抽象实现类，其中 refresh() 方法定义 Spring 容器在加载配置文件后的各项处理过程；
+    + AbstractApplicationContext#refresh() 执行的大概步骤：
+        1. 初始化 BeanFactory：根据配置文件实例化 BeanFactory；此步骤中，Spring 将配置文件信息装入容器的 Bean 定义注册表（BeanDefinitionRegistry）时 Bean 还为初始化；
+        2. 调用工厂后处理器：根据反射机制从 BeanDefinitionRegistry 中找出所有实现 BeanFactoryPostProcessor 接口的 Bean，并调用其接口方法；
+        3. 注册 Bean 后处理器：同上，找出所有实现 BeanPostProcessor 接口的 Bean，并调用其接口方法；
+        4. 初始化信息源：初始化容器的国际化消息资源；
+        5. 初始化应用上下文事件广播器；
+        6. 初始化其他特殊的 Bean：钩子方法，子类可借助此方法执行一些特殊操作；
+        7. 注册事件监听器；
+        8. 初始化所有单实例的 Bean：除懒加载的 Bean，Bean 初始化后将其放入 Spring 容器缓存池中；
+        9. 发布上下文刷新事件：创建上下文刷新事件，事件广播器负责将事件广播到每个注册的事件监听器中；
+    + IoC 容器从加载配置文件到创建 Bean 的工作流程：
+        1. ResourceLoader 加载 Spring 配置文件，并用 Resource 表示；
+        2. BeanDefinitionRegister 读取 Resource 所指向的配置文件资源，通过 BeanDefinitionReader 解析配置文件；每个 ```<bean>``` 节点解析成一个 BeanDefinition 对象，并保存至 BeanDefinitionRegistry 中；
+        3. 容器扫描 BeanDefinitionRegistry 中的 BeanDefinition，根据反射机制自动识别出 Bean 工厂后处理器，然后调用对 BeanDefinition 进行处理，主要两项工作：
+            1. 对需要加工的 BeanDefinition 进行加工处理；
+            2. 找出所有哦哦属性编辑器的 Bean（实现 java.beans.PropertyEditor 接口的 Bean），并自动注册到 Spring 容器的属性编辑器注册表 PropertyEditorRegistry 中；
+        4. 取出 BeanDefinition，调用 InstantiationStrategy 进行 Bean 实例化工作；
+        5. Bean 实例化时，Spring 容器使用 BeanWrapper 对 Bean 进行封装，完成 Bean 属性的注入工作；
+        6. （若实现工厂后处理器接口）Bean 工厂后处理器对已完成属性设置的 Bean 进行后续加工；
+    + Spring 容器设计的两条脉络：
+        + 接口层描述容器的重要组件及组件间的协作关系；
+        + 继承体系逐步实现组件的各项功能；
+    + 两类 Spring 组件：
+        + 物料组件：Resource、BeanDefinition、PropertyEditor 等；
+        + 设备组件：ResourceLoader、BeanDefinitionReader、BeanFactoryPostProcessor、InstantiationStrategy、BeanWrapper 等；
+
+```java
+// AbstractApplicationContext 中 refresh() 定义的执行逻辑
+// 1.初始化 BeanFactory，在 obtainFreshBeanFactory() 方法中先调用 refreshBeanFactory() 刷新 BeanFactory，然后调用 getBeanFactory() 获取 BeanFactory；
+ConfigurableListableBeanFactory beanfactory = obtainFreshBeanFactory();
+
+// 2.调用工厂后处理器
+invokeBeanFactoryPostProcessors();
+
+// 3.注册 Bean 后处理器
+registerBeanPostProcessors();
+
+// 4.初始化信息源
+initMessaageSource();
+
+// 5.初始化应用上下文事件广播器
+initApplicationEventMulticaster();
+
+// 6.初始化其他特殊 Bean：有具体子类实现
+onRefresh();
+
+// 7.注册事件监听器
+registerListeners();
+
+// 8.初始化所有单实例的 Bean（使用懒加载模式的 Bean 除外）
+finishBeanFactoryInitialization(beanFactory);
+
+// 9.完成刷新并发布容器刷新事件 
+finishRefresh();
+```
+
+#### 6.2 属性编辑器
+
+#### 6.3 使用外部属性文件
+
+#### 6.4 引用 Bean 属性值
+
+#### 6.5 国际化信息
+
+#### 6.6 容器事件
 
 ### [7.Spring AOP 基础]()
 
