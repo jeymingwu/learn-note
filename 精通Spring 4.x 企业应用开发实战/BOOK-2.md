@@ -702,7 +702,7 @@ Spring IoC 工作流程
         2. BeanDefinitionRegister 读取 Resource 所指向的配置文件资源，通过 BeanDefinitionReader 解析配置文件；每个 ```<bean>``` 节点解析成一个 BeanDefinition 对象，并保存至 BeanDefinitionRegistry 中；
         3. 容器扫描 BeanDefinitionRegistry 中的 BeanDefinition，根据反射机制自动识别出 Bean 工厂后处理器，然后调用对 BeanDefinition 进行处理，主要两项工作：
             1. 对需要加工的 BeanDefinition 进行加工处理；
-            2. 找出所有哦哦属性编辑器的 Bean（实现 java.beans.PropertyEditor 接口的 Bean），并自动注册到 Spring 容器的属性编辑器注册表 PropertyEditorRegistry 中；
+            2. 找出所有属性编辑器的 Bean（实现 java.beans.PropertyEditor 接口的 Bean），并自动注册到 Spring 容器的属性编辑器注册表 PropertyEditorRegistry 中；
         4. 取出 BeanDefinition，调用 InstantiationStrategy 进行 Bean 实例化工作；
         5. Bean 实例化时，Spring 容器使用 BeanWrapper 对 Bean 进行封装，完成 Bean 属性的注入工作；
         6. （若实现工厂后处理器接口）Bean 工厂后处理器对已完成属性设置的 Bean 进行后续加工；
@@ -742,6 +742,45 @@ finishBeanFactoryInitialization(beanFactory);
 // 9.完成刷新并发布容器刷新事件 
 finishRefresh();
 ```
+
+![BeanDefinition 类继承结构](./img/ioc-beandefinition.png)
+
+BeanDefinition 类继承结构
+
++ BeanDefinition
+    + org.springframework.beans.factory.config.BeanDefinition
+    + 配置文件中 ```<bean>``` 元素标签在容器的内部表示；
+    + bean 标签元素与 BeanDefinition 类属性的对应：
+        + class —— beanClass
+        + scope —— scope
+        + lazy-init —— lazyInit
+    + 类继承结构：
+        + RootBeanDefinition：定义配置文件中父 bean 节点； 
+        + ChildBeanDefinition：定义配置文件中子 bean 节点；
+    + 配置文件 bean 节点 -> BeanDefinition -> BeanDefinitionRegistry
+    + BeanDefinition ***在容器启动时***或***容器刷新或重启***时加载和解析；
+    
+![InstantiationStrategy 类继承结构](./img/ioc-instantiationstrategy.png)
+
+InstantiationStrategy 类继承结构
+
++ InstantiationStrategy
+    + org.springframework.beans.factory.support.InstantiationStrategy
+    + 负责根据 BeanDefinition 对象创建 Bean 实例；但不参与 Bean 属性设置；返回的 Bean 是半成品，需待 BeanWrapper 填充属性；
+    + 接口存在原因：方便采用不同实例化策略满足不同应用需求；
+    + SimpleInstantiationStrategy：最常用实例化策略；
+    + CglibSubclassingInstantiationStrategy：扩展 SimpleInstantiationStrategy，为需要进行方法注入的 Bean 提供支持；利用 CgLib 类库为 Bean 动态生成子类；
+    
+![BeanWrapper 类继承结构](./img/ioc-beanwrapper.png)
+
+BeanWrapper 类继承结构
+
++ BeanWrapper
+    + org.springframework.beans.BeanWrapper
+    + BeanWrapper 相当代理器，完成 Bean 属性填充；
+    + BeanWrapper 两个顶级类接口：
+        + PropertyAccessor
+        + PropertyEditorRegistry：属性编辑器的注册表
 
 #### 6.2 属性编辑器
 
