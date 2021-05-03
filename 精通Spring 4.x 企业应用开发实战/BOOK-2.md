@@ -784,7 +784,52 @@ BeanWrapper 类继承结构
 
 #### 6.2 属性编辑器
 
++ Spring 配置文件中，通过字面值（字符串）设置 Bean 各类型的属性值，属性编辑器（转换器）将字面值（字符串）转换成相应的 JVM 内部类型；
+    + 属性编辑器：任何实现了 java.beans.PropertyEditor 接口均是；
+    + PropertyEditor：JavaBean 规范定义的接口；
++ JavaBean 编辑器：
++ Spring 默认属性编辑器：
+    + 仅负责将配置文件中文本配置值转换成 Bean 属性的对应值；
+
 #### 6.3 使用外部属性文件
+
++ 其他资源配置，可直接在 Spring 配置文件中设置，也可以独立到一个外部属性文件中通过占位符进行引用；
++ 使用外部属性文件的好处：
+    + 减少维护的工作量；
+    + 使部署更简单；
++ Spring 的支持：PropertyPlaceholderConfigurer（实现了 BeanFactoryPostProcessor 接口，也是一个 Bean 工厂后处理器）；可在 Bean 在配置时引用外部属性文件；
++ PropertyPlaceholderConfigurer 属性文件
+    + PropertyPlaceholderConfigurer 的属性：
+      + location：指定一个属性文件；
+      + locations：指定多个属性文件；类似 list；
+      + fileEncoding：属性文件的编码格式；
+      + order：若配置文件中定义多个 PropertyPlaceholderConfigurer，则需指定优先顺序；
+      + placeholderPrefix：占用符前缀，默认为“${”；
+      + placeholderSuffix：占用符后缀，默认为“}”；    
+    + XML ```<bean>``` 节点方式使用 PropertyPlaceholderConfigurer 属性文件：
+        1. 先引用外部属性文件;
+        2. 通过属性名引用属性值；
+    + 使用 ```<context:property-placeholder>``` 引用属性文件；（自定义属性加载器无法使用）
+    + 基于注解及基于 Java 类的配置中引用属性： 可通过 @Value 注解为 Bean 成员变量或方法入参自动注入属性；
++ 使用加密的属性文件：
+    + Spring 容器读取属性文件后，在内存对属性值进行解密，然后将解密后的属性赋值给目标对象；
+    + PropertyPlaceholderConfigurer 继承 PropertyResourceConfigurer，后者有几个用于在属性使用前对属性进行转换的方法：
+        + void convertProperties(Properties props);所有属性值封装再 props 中，覆盖此方法可对所有属性值进行转换处理；
+        + String convertProperty(String propertyName, String propertyValue);在加载属性文件并读取文件中的每个属性时，都会调用此方法进行转换处理；
+        + String convertPropertyValue(String originalValue);类似上方法；
+    + 处理加密属性时可拓展 PropertyPlaceholderConfigurer，覆盖上述方法；
+    + [自定义属性加载器 Demo，对密文解密](./src/main/java/com/example/placeholder/EncryptPropertyPlaceholderConfigurer.java)
++ 属性文件自身的引用：与定义 Bean 时引用属性值一样，在引用处 ${}；
+
+```xml
+<!-- 方式一：引用外部属性文件 -->
+<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"
+    p:location="classpath:xxx-property.properties"
+    p:fileEncoding="utf-8"/>
+    
+<!-- 方式二：引用外部属性文件 -->
+<context:property-placeholder location="classpath:xxx-property.properties"/>
+```
 
 #### 6.4 引用 Bean 属性值
 

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean class="com.example.placeholder.EncryptPropertyPlaceholderConfigurer"
+          p:location="classpath:placeholder.properties"
+        p:fileEncoding="utf-8"/>
+
+    <bean id="account" class="com.example.pojo.Account"
+          p:username="${username}"
+          p:password="${password}"/>
+</beans>
