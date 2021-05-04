@@ -833,7 +833,67 @@ BeanWrapper 类继承结构
 
 #### 6.4 引用 Bean 属性值
 
++ Spring 3.0 中，可通过 ```#{beanName.beanProp}``` 的方式方便地引用另一个 Bean 的值；
++ 基于注解和基于 Java 类配置的 Bean，可通过注解形式 @Value("#{beanName.beanProp}") 引用 Bean 的属性值； 
+
 #### 6.5 国际化信息
+
++ 使用场景：开发支持多国语言的应用，要求系统能根据客户端系统的语言返回对应的界面；—— i18n 国际化问题；
++ 国际化信息：又称“本地化信息”；“语言类型”和“国家/地区类型”两个条件确定一个特定类型的本地化信息；
+    + java.util.Locale 类表示一个本地化对象，允许两个条件创建一个确定的本地化对象；
+    + 语言类型：ISO 标准语言代码表示，由 ISO-639 标准定义；[http://www.loc.gov/standards/iso639-2/php/English_list.php](http://www.loc.gov/standards/iso639-2/php/English_list.php)
+    + 国家/地区类型：ISO 标准国家/地区代码表示，由 ISO-3166 标准定义；[http://www.iso.org/iso/country_codes](http://www.iso.org/iso/country_codes)
++ 本地化工具类：
+    + JDK 的 java.util 包下提供几个支持本地化的格式化操作工具类：
+        + NumberFormat：按本地化的方式对货币金额进行格式化操作；
+        + DateFormat:按本地化的方式对日期进行格式化操作；
+        + MessageFormat:在上面两者的基础上提供更强大的占位符字符串格式化功能；支持时间、货币、数字及对象属性的格式化操作；
+
+![MessageFormat 示例代码](./img/messageformat-code.png)
+
+MessageFormat 示例代码
+
+```java
+// 带语言和国家/地区信息的本地化对象
+Locale locale = new Locale("zh", "CN");
+Locale locale = Locale.CHINA;
+
+// 只有语言信息的本地化对象
+Locale locale = new Locale("zh");
+Locale locale = Locale.CHINESE;
+
+// 获取本地系统默认的本地化对象
+Locale locale = Locale.getDefaule;
+```
+
++ ResourceBundle
+    + 国际化资源文件的命名规范：
+        + ```<资源名>_<语言代码>_<国家/地区代码>.properties```
+        + ```<资源名>.properties```：默认的资源文件；若某个本地化类型在系统中查找不到则采用默认；
+        + ```<资源名>_<语言代码>.properties```：某一个语言默认的资源文件；若无法精确匹配资源文件则采用该文件；
+    + 本地化资源文件内容采用特殊编码形式：只能包含 ASCII 字符，其他字符转换成 Unicode 代码形式；（实际开发中可以正常表示，测试或部署时再转换——native2ascii）
+    + java.util.ResourceBundle
+        + 传统 File 操作资源文件过于笨拙；ResourceBundle 可便捷加载；
+        + ```ResourceBundler rb = ResourceBundler.getBundle("资源文件所在目录", locale); rb.getString("xxx");```
++ MessageSource：
+    + Spring 定义访问国际化信息的接口；
+    + MessageSource 接口的重要方法：
+        + ```String getMessage(String code, Object[] args, String defaultMessage, Locale locale);```
+            + code：国际化信息中的属性名；
+            + args：传递格式化串占位符所用的运行期参数；
+            + defaultMessage：指定默认信息；（找不到对应信息时返回）
+            + locale：本地化对象；
+        + ```String getMessage(String code, Object[] args, Locale locale) throws Exception;```：与上方法类似，只是找不到信息时抛出异常；
+        + ```String getMessage(MessageSourceResolvable resolvable, Locale locale) throws Exception;```MessageSourceResolvable 将属性名、参数数组和默认信息封装起来；
+    + MessageSource 的类结构：
+        + MessageSource 分别被 HierarchicalMessageSource 和 ApplicationContext 接口扩展；
+        + ResourceBundleMessageSource：
+            + 允许用户通过 beanName 指定资源名；
+        + ReloadableResourceBundleMessageSource：
+
+![MessageSource 类结构](./img/messagesource.png)
+
+MessageSource 类结构
 
 #### 6.6 容器事件
 
