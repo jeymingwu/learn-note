@@ -874,13 +874,15 @@ Locale locale = Locale.getDefaule;
     + 本地化资源文件内容采用特殊编码形式：只能包含 ASCII 字符，其他字符转换成 Unicode 代码形式；（实际开发中可以正常表示，测试或部署时再转换——native2ascii）
     + java.util.ResourceBundle
         + 传统 File 操作资源文件过于笨拙；ResourceBundle 可便捷加载；
-        + ```ResourceBundler rb = ResourceBundler.getBundle("资源文件所在目录", locale); rb.getString("xxx");```
+        + ```ResourceBundler rb = ResourceBundler.getBundle("baseName-本地资源化文件资源名", locale); rb.getString("xxx");```
+        + [ResourceBundleDemo](./src/main/java/com/example/i18n/ResourceBundleDemo.java)
+        + [Format-ResourceBundleDemo](./src/main/java/com/example/i18n/FmtResourceBundleDemo.java)
 + MessageSource：
     + Spring 定义访问国际化信息的接口；
     + MessageSource 接口的重要方法：
         + ```String getMessage(String code, Object[] args, String defaultMessage, Locale locale);```
             + code：国际化信息中的属性名；
-            + args：传递格式化串占位符所用的运行期参数；
+            + args：传递格式化串占位符所用的运行期参数；（格式化参数）
             + defaultMessage：指定默认信息；（找不到对应信息时返回）
             + locale：本地化对象；
         + ```String getMessage(String code, Object[] args, Locale locale) throws Exception;```：与上方法类似，只是找不到信息时抛出异常；
@@ -889,7 +891,14 @@ Locale locale = Locale.getDefaule;
         + MessageSource 分别被 HierarchicalMessageSource 和 ApplicationContext 接口扩展；
         + ResourceBundleMessageSource：
             + 允许用户通过 beanName 指定资源名；
+            + 该类中封装 basenameSet 属性，可将本地化资源文件路径直接通过属性注入，无需单独加载；
+            + [ResourceBundleMessageSourceDemo](./src/main/java/com/example/i18n/ResourceBundleMessageSourceDemo.java)
         + ReloadableResourceBundleMessageSource：
+            + 提供定时刷新功能，允许在不重启的系统下更新资源信息；
+            + [配置文件参考](./src/main/resources/i18n.xml)
++ 容器级的国际化信息资源：
+    + ApplicationContext 实现 MessageSource 接口的思想： 一般情况下，国际化信息资源应是容器级别；容器的基础设施，应向容器中所有 Bean 开放；不应将 MessageSource 作为一个 Bean 注入其他 Bean 中；
+    + 声明容器级别的国际化信息资源：Spring 容器启动步骤中的第四步：initMessageSource()，初始化容器中国际化信息资源；根据反射从 BeanDefinitionRegistry 中找出类型为 MessageSource 的 Bean，将该 Bean 定义的信息资源加载位容器级别的国际化信息资源；
 
 ![MessageSource 类结构](./img/messagesource.png)
 
