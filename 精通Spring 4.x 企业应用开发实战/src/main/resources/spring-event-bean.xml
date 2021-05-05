@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+<!--    注册事件监听器-->
+    <bean class="com.example.event.MailListener"/>
+
+    <bean id="mailSender" class="com.example.event.MailSender"/>
+
+<!--    无自定义广播器，默认使用 SimpleApplicationEventMulticaster-->
+</beans>

@@ -906,6 +906,58 @@ MessageSource 类结构
 
 #### 6.6 容器事件
 
++ Spring 中 ApplicationContext 能发布事件且允许注册响应的事件监听器 —— 完整的事件发布和监听机制；
++ Java 体系中：
+    + java.util.EventObject：接口描述事件；
+    + java.util.EventListener：监听器；
++ 监听体系中的概念：
+    + 事件源：事件的产生者；
+    + 事件监听器注册表：事件监听器存放地址，事件源产生事件就会通知注册表的监听器；
+    + 事件广播器：事件和监听器沟通的桥梁；
+    
+##### Spring 事件类结构：
+
++ 事件类：ApplicationEvent，构造函数 ApplicationEvent(Object source)，source 指定事件源，两个子类：
+    + ApplicationContextEvent：容器时间，4个子类：容器启动、刷新、停止和关闭操作；
+    + RequestHandleEvent：与 Web 应用相关的事件；两个子类：Servlet 及 Portlet 事件请求；
+
+![Spring 事件类结构](./img/spring-eventobject.png)
+
+Spring 事件类结构
+
++ 事件监听接口：
+    + Spring 所有监听器均继承自 ApplicationListener 接口；
+    + ApplicationListener#onApplicationEvent(E event); 该接口仅一个方法，主要接收 ApplicationEvent 事件对象；
+    + Spring 3.0 新增 SmartApplicationListener 接口，定义了两个方法：
+        + ```boolean supportsEventType(Class<? extends ApplicationEvent> eventType);```：指定监听器对指定的容器事件类型作用响应；
+        + ```boolean supportsSourceType(Class<?> sourceType);```：指定监听器对指定事件源对象作用响应；
+    + Spring 4.2 新增 GenericApplication 接口，与 SmartApplicationListener 接口类似，不同的是增强了对泛型事件类型的支持，不再仅限于 ApplicationEvent 的子类型，采用可解析类型 ResolvableType；
+        + ResolvableType：Spring 4.0 新增的简便泛型操作支持类；
+        + GenericApplication 接口的两个方法：
+            + ```boolean supportsEventType(ResolvableType eventType);```：指定监听器对指定的事件类型作用响应；
+            + ```boolean supportsSourceType(Class<?> sourceType);```：指定监听器对指定事件源对象作用响应；
+
+![Spring 事件监听器接口类结构](./img/spring-eventlistener.png)
+
+Spring 事件监听器接口类结构
+
++ 事件广播器：ApplicationEventMulticaster
+
+![Spring 中事件广播器类结构](./img/spring-applicationeventmulticaster.png)    
+
+Spring 中事件广播器类结构
+
++ Spring 事件体系的具体实现：
+    + Spring 在 ApplicationContext 接口的抽象实现类 AbstractApplicationContext 中完成事件体系的搭建；
+    + AbstractApplicationContext 类中有 ApplicationEventMulticaster 成员变量：提供容器监听器的注册表；
+    + Spring 容器启动事项：
+        + 初始化应用上下文事件广播器：
+            + 可在配置文件中自定义事件广播器（只要实现 ApplicationEventMulticaster 接口）；
+            + 若无自定义的外部事件广播器，则自动使用 SimpleApplicationEventMulticaster；
+        + 注册事件监听器：从 BeanDefinitionRegistry 中找出所有监听器，将其注册为容器的事件监听器（将监听器添加到事件广播器所提供的事件监听器注册表）；
+        + 完成刷新并发布容器刷新事件：容器启动完成，调用事件发布接口向容器中所有监听器发布事件；
+    + [Spring 中事件的运用实例](./src/main/java/com/example/event/MailSenderMain.java)
+
 ### [7.Spring AOP 基础]()
 
 ### [8.基于 @AspectJ 和 Schema 的 AOP]()
