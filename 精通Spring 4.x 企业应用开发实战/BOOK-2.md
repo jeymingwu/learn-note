@@ -958,7 +958,104 @@ Spring 中事件广播器类结构
         + 完成刷新并发布容器刷新事件：容器启动完成，调用事件发布接口向容器中所有监听器发布事件；
     + [Spring 中事件的运用实例](./src/main/java/com/example/event/MailSenderMain.java)
 
-### [7.Spring AOP 基础]()
+### 7.Spring AOP 基础
+
+#### 7.1 AOP 概括
+
++ AOP：面向切面编程
+    + OOP （面向对象编程）的补充；
+    + 有特定的应用场景，适合具有横切逻辑的应用场合：
+        + 性能监测；
+        + 访问控制；
+        + 事务管理；
+        + 日志记录；
+    + 作用：通过***横向抽取机制**将无法通过**纵向继承体系**进行抽象的重复性代码提供解决方案，将业务代码与非业务代码解耦；
++ AOP 术语：
+    + 连接点 joinPoint：
+        + 客观存在的事物；
+        + 程序执行特定的位置；
+        + 具有边界性质的特定点的代码；
+        + Spring 仅支持方法的连接点；（仅能在方法调用前、后、抛出异常等织入增强）
+    + 切点 pointCut：
+        + 切点定位特定的连接点；
+        + 切点与连接点的关系：类似数据库查询，连接点相当于数据库中的数据，切点相当于查询数据的查询条件；两者不是一一对应，一个切点可匹配多个连接点；
+        + Spring 中通过 org.springframework.aop.Pointcut 接口描述，使用类和方法作为连接点的查询条件；
+    + 增强 advice：
+        + 织入目标类连接点的一段程序代码；
+        + 也包含和连接点相关的信息——执行点的方位；
+        + Spring 中着增强的接口：BeforeAdvice、AfterReturningAdvice、Throwable等；
+    + 目标对象 target：增强逻辑的织入目标类；
+    + 引介 introduction：
+        + 特殊增强；
+        + 为类添加属性和方法；（可动态为业务类添加接口的实现逻辑，让该类实现接口）
+    + 织入 weaving：
+        + 将增强添加到目标类的具体连接点上的过程；
+        + 三种织入方式：
+            + 编译器织入，需使用特殊的 Java 编译器；（AspectJ 采用）
+            + 类装载期织入，需使用特殊的类装载器；（AspectJ 采用）
+            + 动态代理织入，在运行期为目标类添加增强生成子类的方式；（Spring 采用的方式）
+    + 代理 proxy： 一个类被 AOP 织入增强后，开产生一个结果类（融合原类和增强逻辑的代理类）；
+    + 切面 aspect：
+        + 由切点和增强（引介）组成；
+        + 包括横切逻辑的定义、连接点的定义；
++ AOP 实现者：
+    + AspectJ：
+        + 能够再编译器提供横切代码的织入；
+        + 有专门的编译器用于生成遵守 Java 字节编码规范的 Class 文件；
+    + AspectWerkz
+    + JBoss AOP
+    + Spring AOP
+        + 无需专门编译过程、特殊的类装载器；
+        + 在运行时期通过代理方式向目标类织入增强代码；
+
+#### 7.2 基础知识
+
++ Spring AOP 两种代理机制：
+    + 基于 JDK 的动态代理；（只提供接口代理，不支持类的代理）
+    + 基于 CGLib 的动态代理；
++ 带有横切逻辑的实例：[无使用 AOP 代理 Demo](./src/main/java/com/example/aop/noproxy/ForumServiceDemo.java)
++ JDK 动态代理：
+    + 涉及 java.lang.reflect 包中两个类：Proxy 和 InvocationHandler；
+    + 通过 InvocationHandler 接口定义横切逻辑，通过反射机制调用目标类的代码；动态地将横切逻辑和业务逻辑编织一起；
+    + InvocationHandler#invoke(Object proxy, Method method, Object[] args);
+        + proxy：最终生成的代理实例，一般很少用到；
+        + method：被代理目标实例实现的某个具体方法，反射时调用；
+        + args：被代理实例某个方法的入参，反射时调用；
+    + Proxy#newInstance(ClassLoader loader, Class[] interfaces, InvocationHandler handler);
+        + loader：目标类加载器；
+        + interfaces：代理实例实现的接口列表；（JDK 动态的代理的不足）
+        + handler：代理处理的逻辑；
+    + [JDK 动态代理 Demo](./src/main/java/com/example/aop/jdkproxy/ForumServiceDemo.java)
++ CGLib 动态代理：
+    + 适用于没有通过接口定义业务方法的类；
+    + CGLib 核心：采用底层的字节码技术，为一个类创建一个子类，在子类中采用方法拦截的技术拦截所有父类方法的调用并顺势织入横切逻辑；（动态创建子类生成代理对象）
+    + CGLib 中 MethodInterceptor#intercept(Object obj, Method method, Object[] args, MethodProxy proxy);
+        + obj：目标类的实例
+        + method：目标类方法的反射对象
+        + args：方法的动态入参
+        + proxy：代理类的实例
+    + 不足：不能对目标类中的 final 或 private 方法进行代理；
+    + [CGLib 动态代理 Demo](./src/main/java/com/example/aop/cglibproxy/ForumServiceDemo.java)
++ 总结：
+    + 通过 PerformanceHandler（JDK）或 CGlibProxy（CGLib）实现功能横切逻辑的动态织入，但仍有不足：
+        + 目标类所有方法均实现了增强，某些情况下仅希望对某个特定方法实现；（无法只对特定方法增强）
+        + 通过硬编码的方式指定了织入横切逻辑的织入点，即在目标类业务方法的开始和结束前织入代码；（织入代码位置固定）
+        + 手工编写代理实例的创建过程；在不同类创建代理时需分别编写对应的创建代码，无法通用；（一个 proxy 只能代理一个类）
+    + Spring AOP 改进以上问题：
+        + 通过 pointCut （切点）指定哪些类那些方法织入横切逻辑；
+        + 通过 advice （增强）描述横切逻辑和方法的具体织入点（方法前、方法后、方法两端、抛出异常、方法执行完毕返回）；
+        + advisor （切面）将 pointCut （切点）和 advice （增强）组装；
+    + CGLib 创建的动态代理对象的性能 > JDK 动态创建的；但 CGLib 创建代理对象花费的时间 > JDK 动态创建的；
+        + CGLib 适合于 singleton 或具有实例池的实例；（无需频繁创建）
+        + JDK 适用于需频繁动态创建实例；
+
+#### 7.3 创建增强类
+
+#### 7.4 创建切面
+
+#### 7.5 自动创建代理
+
+#### 7.6 小结
 
 ### [8.基于 @AspectJ 和 Schema 的 AOP]()
 
