@@ -1,4 +1,4 @@
-package com.example.aop.jdkproxy;
+package com.example.aop;
 
 import com.example.aop.ForumService;
 

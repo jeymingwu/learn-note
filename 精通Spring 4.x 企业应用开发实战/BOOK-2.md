@@ -1051,6 +1051,82 @@ Spring 中事件广播器类结构
 
 #### 7.3 创建增强类
 
++ Spring 使用增强类定义横切逻辑；增强及包含横切逻辑，又包含部分连接点信息；
++ Spring 支持的增强类型：
+    + 前置增强：org.springframework.aop.BeforeAdvice
+    + 后置增强：org.springframework.aop.AfterReturningAdvice
+    + 环绕增强：org.aopalliance.intercept.MethodInterceptor
+    + 异常抛出增强：org.springframework.aop.ThrowsAdvice
+    + 引介增强：org.springframework.aop.IntroductionInterceptor
+
+![增强接口继承关系图](./img/spring-aop-advice.png)
+
+增强接口继承关系图
+
++ 前置增强：
+    + [前置增强 Demo](./src/main/java/com/example/aop/springaop/GreetingBeforeAdvice.java)
+    + MethodBeforeAdvice#before(Method method, Object[] args, Object obj);
+        + method：目标类的方法；
+        + args：目标类方法的入参；
+        + obj：目标类实例；
+    + ProxyFactory：org.springframework.aop.framework.ProxyFactory；
+        + Spring 中定义了 org.springframework.aop.framework.AopProxy
+            + Cglib2AopProxy：CGLib 动态代理技术创建代理；
+            + JdkDynamicAopProxy：JDK 动态代理技术创建代理；
+        + 若 ProxyFactory#setInterfaces(Class[] interfaces) 方法指定目标接口进行代理，则选用 JDK 动态代理；
+        + 若针对类的代理，则使用 CGLib 动态代理；
+        + 若 Proxy#setOptimize(true) 方法让 ProxyFactory 启动优化代理方式，则也选用 CGLib 动态代理；
+    + Spring 中配置：
+        + ProxyFactoryBean 是 FactoryBean 接口的实现类，负责对 Bean 创建代理实例，内部使用 ProxyFactory；
+        + ProxyFactoryBean 可用配置属性：
+            + target：代理目标对象；
+            + proxyInterfaces：代理所需实现的接口；
+            + interceptorNames：需要织入的目标对象的 Bean 列表；（增强的类）
+                + 接收增强 Bean 的名称而并非增强 Bean 的实例；
+                + 最好实现： ```<property name="interceptorNames"><list><idref bean="advice"/></list></property>```
+                + 便捷实现：```<property name="interceptorNames" value="advice"/>```
+            + singleton：返回的代理时候是单实例，默认单实例；
+            + optimize：设置 true 时强制使用 CGLib 动态代理；对于 singleton 代理推介使用；
+            + proxyTargetClass：是否对类进行代理；当设置 true 时使用 CGLib 动态代理；
+        + [Spring 配置 AOP.xml](./src/main/resources/aop/ProxyFactoryBean.xml)
+
+![AopProxy 类结构](./img/spring-aop-aopproxy.png)    
+
+AopProxy 类结构
+
++ 后置增强：
+    + [后置增强 Demo](./src/main/java/com/example/aop/springaop/GreetingAfterAdvice.java)
+    + AfterReturningAdvice#afterReturning(Object returnObj, Method method, Object[] args, Object object);
+        + returnObj：目标实例方法返回的结果；
+        + method：目标类的方法；
+        + args：目标实例方法的入参；
+        + object：目标类实例；
++ 环绕增强：
+    + [环绕增强 Demo](./src/main/java/com/example/aop/springaop/GreetingInterceptor.java)
+    + MethodInterceptor#invoke(MethodInvocation invocation);
+        + invocation：封装了目标方法、入参数组、目标方法所在的实例对象；
+            + getArguments()：获取入参数组；
+            + proceed()：反射调用目标实例相应的方法；
++ 异常抛出增强：
+    + [异常抛出增强 Demo](./src/main/java/com/example/aop/springaop/GreetingThrowsAdvice.java)
+    + 最适用于事务管理；
+    + ThrowsAdvice 接口仅是一个标签接口，并没有定义任何方法，运行期 Spring 适用反射机制自行判断；
+    + 必须采取签名形式定义异常抛出的增强方法：void afterThrowing(Method method, Object[] args, Object target, Throwable throwable);
+        + 前三个入参可选（要么不选，要么全部选），最后一个入参是 Throwable 或其子类；
+        + 若定义多个方法，那么目标类抛出异常时 Spring 会自动选用最匹配的增强方法；
++ 引介增强：
+    + 特殊增强类型，不是在目标方法周围织入增强，而是为目标类创建新的方法和属性；也可为目标类添加一个接口的实现；
+    + 引介增强的连接点：类级别；非方法级别；
+    + Spring 引介增强接口：IntroductionInterceptor，但该接口没有定义任何方法；
+    + IntroductionInterceptor 接口的实现类：DelegatingIntroductionInterceptor；一般通过扩展该实现类自定义引介增强类；
+    + [引介增强 Demo](./src/main/java/com/example/aop/springaop/introduction/ControllablePerformance.java)
+    + 引介增强的配置与其他的配置的区别：
+        + 引介增强需指定所实现的接口；
+        + 引介增强只能通过为目标类创建子类的方式生成引介增强的代理，必须使用 CGLib（必须将 proxyTargetClass="true"）;
+        + 线程安全问题，需将 singleton 设置为 false，让 ProxyFactoryBean 产生 property 作用域类型的代理；
+            + 但又产生另一个问题，每次 getBean() 均返回一个新的代理实例，CGLib 动态创建代理的性能很低，耗时较高；
+            + 通过 ThreadLocal 处理线程问题；可默认使用 singleton 作用域；
+
 #### 7.4 创建切面
 
 #### 7.5 自动创建代理

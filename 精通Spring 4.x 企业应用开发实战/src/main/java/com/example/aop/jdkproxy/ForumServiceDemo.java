@@ -1,6 +1,7 @@
 package com.example.aop.jdkproxy;
 
 import com.example.aop.ForumService;
+import com.example.aop.ForumServiceImpl;
 
 import java.lang.reflect.Proxy;
 

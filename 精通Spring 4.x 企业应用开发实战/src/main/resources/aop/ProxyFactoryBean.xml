@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+<!--    前置增强-->
+    <bean id="greetingBeforeAdvice" class="com.example.aop.springaop.GreetingBeforeAdvice"/>
+
+    <bean id="greetingAfterAdvice" class="com.example.aop.springaop.GreetingAfterAdvice"/>
+
+    <bean id="greetingAroundAdvice" class="com.example.aop.springaop.GreetingInterceptor"/>
+
+    <bean id="greetingThrowsAdvice" class="com.example.aop.springaop.GreetingThrowsAdvice"/>
+
+    <bean id="nativeWaiter" class="com.example.aop.springaop.NaiveWaiter"/>
+
+    <bean id="wrongWaiter" class="com.example.aop.springaop.WrongWaiter"/>
+
+<!--    <bean id="waiter" class="org.springframework.aop.framework.ProxyFactoryBean"-->
+<!--          p:proxyInterfaces="com.example.springaop.Waiter"-->
+<!--          p:interceptorNames="greetingBeforeAdvice, greetingAfterAdvice"-->
+<!--          p:target-ref="target"-->
+<!--          />-->
+
+<!--    最好实现-->
+    <bean id="waiter" class="org.springframework.aop.framework.ProxyFactoryBean"
+          p:proxyInterfaces="com.example.aop.springaop.Waiter"
+          p:target-ref="nativeWaiter">
+        <property name="interceptorNames">
+            <list>
+                <idref bean="greetingBeforeAdvice"/>
+                <idref bean="greetingAfterAdvice"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="waiterByIntercept" class="org.springframework.aop.framework.ProxyFactoryBean"
+          p:proxyInterfaces="com.example.aop.springaop.Waiter"
+          p:interceptorNames="greetingAroundAdvice"
+          p:target-ref="nativeWaiter"/>
+
+    <bean id="waiterByThrows" class="org.springframework.aop.framework.ProxyFactoryBean"
+          p:proxyInterfaces="com.example.aop.springaop.Waiter"
+          p:interceptorNames="greetingThrowsAdvice"
+          p:target-ref="wrongWaiter"/>
+</beans>

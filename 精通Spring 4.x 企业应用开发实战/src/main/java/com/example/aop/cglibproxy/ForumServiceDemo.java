@@ -1,7 +1,7 @@
 package com.example.aop.cglibproxy;
 
 import com.example.aop.ForumService;
-import com.example.aop.jdkproxy.ForumServiceImpl;
+import com.example.aop.ForumServiceImpl;
 
 /**
  * @author : jeymingwu
