@@ -4,17 +4,17 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 <!--    前置增强-->
-    <bean id="greetingBeforeAdvice" class="com.example.aop.springaop.GreetingBeforeAdvice"/>
+    <bean id="greetingBeforeAdvice" class="com.example.aop.advice.GreetingBeforeAdvice"/>
 
-    <bean id="greetingAfterAdvice" class="com.example.aop.springaop.GreetingAfterAdvice"/>
+    <bean id="greetingAfterAdvice" class="com.example.aop.advice.GreetingAfterAdvice"/>
 
-    <bean id="greetingAroundAdvice" class="com.example.aop.springaop.GreetingInterceptor"/>
+    <bean id="greetingAroundAdvice" class="com.example.aop.advice.GreetingInterceptor"/>
 
-    <bean id="greetingThrowsAdvice" class="com.example.aop.springaop.GreetingThrowsAdvice"/>
+    <bean id="greetingThrowsAdvice" class="com.example.aop.advice.GreetingThrowsAdvice"/>
 
-    <bean id="nativeWaiter" class="com.example.aop.springaop.NaiveWaiter"/>
+    <bean id="nativeWaiter" class="com.example.aop.advice.NaiveWaiter"/>
 
-    <bean id="wrongWaiter" class="com.example.aop.springaop.WrongWaiter"/>
+    <bean id="wrongWaiter" class="com.example.aop.advice.WrongWaiter"/>
 
 <!--    <bean id="waiter" class="org.springframework.aop.framework.ProxyFactoryBean"-->
 <!--          p:proxyInterfaces="com.example.springaop.Waiter"-->
@@ -24,7 +24,7 @@
 
 <!--    最好实现-->
     <bean id="waiter" class="org.springframework.aop.framework.ProxyFactoryBean"
-          p:proxyInterfaces="com.example.aop.springaop.Waiter"
+          p:proxyInterfaces="com.example.aop.advice.Waiter"
           p:target-ref="nativeWaiter">
         <property name="interceptorNames">
             <list>
@@ -35,12 +35,12 @@
     </bean>
 
     <bean id="waiterByIntercept" class="org.springframework.aop.framework.ProxyFactoryBean"
-          p:proxyInterfaces="com.example.aop.springaop.Waiter"
+          p:proxyInterfaces="com.example.aop.advice.Waiter"
           p:interceptorNames="greetingAroundAdvice"
           p:target-ref="nativeWaiter"/>
 
     <bean id="waiterByThrows" class="org.springframework.aop.framework.ProxyFactoryBean"
-          p:proxyInterfaces="com.example.aop.springaop.Waiter"
+          p:proxyInterfaces="com.example.aop.advice.Waiter"
           p:interceptorNames="greetingThrowsAdvice"
           p:target-ref="wrongWaiter"/>
 </beans>

@@ -1,4 +1,4 @@
-package com.example.aop.springaop.introduction;
+package com.example.aop.advice.introduction;
 
 import com.example.aop.PerformanceMonitor;
 import org.aopalliance.intercept.MethodInvocation;

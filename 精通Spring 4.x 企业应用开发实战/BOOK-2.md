@@ -1064,7 +1064,7 @@ Spring 中事件广播器类结构
 增强接口继承关系图
 
 + 前置增强：
-    + [前置增强 Demo](./src/main/java/com/example/aop/springaop/GreetingBeforeAdvice.java)
+    + [前置增强 Demo](./src/main/java/com/example/aop/advice/GreetingBeforeAdvice.java)
     + MethodBeforeAdvice#before(Method method, Object[] args, Object obj);
         + method：目标类的方法；
         + args：目标类方法的入参；
@@ -1095,20 +1095,20 @@ Spring 中事件广播器类结构
 AopProxy 类结构
 
 + 后置增强：
-    + [后置增强 Demo](./src/main/java/com/example/aop/springaop/GreetingAfterAdvice.java)
+    + [后置增强 Demo](./src/main/java/com/example/aop/advice/GreetingAfterAdvice.java)
     + AfterReturningAdvice#afterReturning(Object returnObj, Method method, Object[] args, Object object);
         + returnObj：目标实例方法返回的结果；
         + method：目标类的方法；
         + args：目标实例方法的入参；
         + object：目标类实例；
 + 环绕增强：
-    + [环绕增强 Demo](./src/main/java/com/example/aop/springaop/GreetingInterceptor.java)
+    + [环绕增强 Demo](./src/main/java/com/example/aop/advice/GreetingInterceptor.java)
     + MethodInterceptor#invoke(MethodInvocation invocation);
         + invocation：封装了目标方法、入参数组、目标方法所在的实例对象；
             + getArguments()：获取入参数组；
             + proceed()：反射调用目标实例相应的方法；
 + 异常抛出增强：
-    + [异常抛出增强 Demo](./src/main/java/com/example/aop/springaop/GreetingThrowsAdvice.java)
+    + [异常抛出增强 Demo](./src/main/java/com/example/aop/advice/GreetingThrowsAdvice.java)
     + 最适用于事务管理；
     + ThrowsAdvice 接口仅是一个标签接口，并没有定义任何方法，运行期 Spring 适用反射机制自行判断；
     + 必须采取签名形式定义异常抛出的增强方法：void afterThrowing(Method method, Object[] args, Object target, Throwable throwable);
@@ -1119,7 +1119,7 @@ AopProxy 类结构
     + 引介增强的连接点：类级别；非方法级别；
     + Spring 引介增强接口：IntroductionInterceptor，但该接口没有定义任何方法；
     + IntroductionInterceptor 接口的实现类：DelegatingIntroductionInterceptor；一般通过扩展该实现类自定义引介增强类；
-    + [引介增强 Demo](./src/main/java/com/example/aop/springaop/introduction/ControllablePerformance.java)
+    + [引介增强 Demo](./src/main/java/com/example/aop/advice/introduction/ControllablePerformance.java)
     + 引介增强的配置与其他的配置的区别：
         + 引介增强需指定所实现的接口；
         + 引介增强只能通过为目标类创建子类的方式生成引介增强的代理，必须使用 CGLib（必须将 proxyTargetClass="true"）;
@@ -1128,6 +1128,76 @@ AopProxy 类结构
             + 通过 ThreadLocal 处理线程问题；可默认使用 singleton 作用域；
 
 #### 7.4 创建切面
+
++ 切点对目标连接点的定位：可有选择地织入目标类的某些特定方法；（切点 —— 描述连接点 —— AOP 编程主要工作）
+    + 增强：提供连接点的方位信息；（织入到方法前、后等等）
+    + 切点：描述该织入哪些类哪些方法上；
+
+![PointCut 类结构关系图](./img/spring-aop-pointcut.png)
+
+PointCut 类结构关系图
+
++ 切点：
+    + Spring 中通过 org.springframework.aop.PointCut 描述切点；
+    + PointCut 由 ClassFilter 和 MethodMatcher 构成；（分别定位特定的类和方法）
+    + ClassFilter 只定义一个方法：matcher(Class clazz);其参数代表一个被检测类；
+    + Spring 支持两种方法匹配器：
+        + 静态方法匹配器：仅对方法名签名（方法名+入参类型及顺序）进行匹配；仅判别一次；
+        + 动态方法匹配器：在运行期检查方法入参的值；因每次调用方法的入参可能不一样，所以每次调用都判断（性能影响较大）；不常使用；
++ 切点类型：
+    + 静态方法切点：org.springframework.aop.support.StaticMethodMatcherPointcut 静态方法抽象类，默认下匹配所有类；
+        + 两个主要子类：
+            + NameMatchMethodPointcut：简单字符串匹配方法签名；
+            + AbstractRegexpMethodPointcut：正则表达式匹配方法签名；
+    + 动态方法切点：org.springframework.aop.support.DynamicMethodMatcherPointcut 动态方法抽象类，默认匹配所有类；
+    + 注解切点：org.springframework.aop.support.annotation.AnnotationMatchingPointcut 支持 Bean 中直接通过注解标签定义的切点；
+    + 表达式切点：org.springframework.aop.support.ExpressionPointcut 接口主要为支持 AspectJ 切点表达式语法而定义；
+    + 流程切点：org.springframework.aop.support.ControlFlowPointcut 特殊切点，根据程序执行堆栈的信息查看目标方法是否由某一个方法直接或间接发起调用；
+    + 复合切点：org.springframework.aop.support.ComposablePointcut 可创建多个切点；
++ 切面：
+    + 可通过增强（横切代码 + 连接点信息）生成；（一般切面）
+    + Spring 中通过 org.springframework.aop.Advisor 接口表示；
+    + 切面三种类型：
+        + 一般切面：Advisor，仅包含一个增强（Advice）；横切的连接点事所有目标类的所有方法；
+        + 切点切面：PointcutAdvisor，具有切点的切面，包含 Advice 和 Pointcut 两个类；可通过类、方法名及方法方位等信息灵活地定义切面连接点；
+        + 引介切面：IntroductionAdvisor，特殊的切面，应用于类层面上，引介切点使用 ClassFilter 定义；
+    + PointcutAdvisor 主要的实现类：
+        + DefaultPointcutAdvisor：最常用切面类型，可通过任意 Pointcut 和 Advice 定义一个切面，唯一不支持的是引介切面类型，可通过扩展该类自定义切面；
+        + NameMatchMethodPointcutAdvisor：可定义按方法名定义切点的切面；
+        + RegexpMethodPointcutAdvisor：按正则表达式匹配方法名进行切点定义的切面，可通过扩展该类；内部通过 JdkRegexpMethodPointcut 构造出正则表达式方法名切点；
+        + StaticMethodMatcherPointcutAdvisor：静态方法匹配器切点定义的切面，默认匹配所有目标类；
+        + AspectJExpressionPointcutAdvisor：用于 AspectJ 切点表达式定义切点的切面；
+        + AspectJPointcutAdvisor：用于 AspectJ 语法定义切点的切面；
+    + 总结：
+        + Advisor 实现类：通过扩展对应的 Pointcut 实现类并实现 PointcutAdvisor 接口进行定义的；
+        + Advisor 均实现 org.springframework.core.Ordered 接口，Spring 根据 Advisor 定义的顺序决定织入切面的顺序；
+
+![切面类继承关系](./img/spring-aop-advisor.png)
+
+切面类继承关系
+
+![PointcutAdvisor 实现类体系](./img/spring-aop-pointcutadvisor.png)
+
+PointcutAdvisor 实现类体系
+
++ 静态普通方法名匹配切面：
+    + StaticMethodMatcherPointcutAdvisor：代表静态方法匹配切面；
+    + StaticMethodMatcherPointcut：定义切点；
+    + 通过类过滤和方法名来匹配所定义的切点；
+    + [静态普通方法匹配器切点定义切面 Demo](src/main/java/com/example/aop/advisor/regexpmethod/methodmatcher/GreetingAdvisor.java)
++ 静态正则表达式方法匹配切面
+    + 普通方法名定义切点：不够灵活；
+    + 正则表达式定义切点：解决灵活问题；如目标类有多个方法，仅需满足一定的命名规则就可匹配；
+    + RegexpMethodPointcutAdvisor：正则表达式方法匹配的切面实现类；（功能齐全，无需自定义，仅需配置就可用）
+    
++ 动态切面
+
++ 流程切面
+
++ 复合切面
+
++ 引介切面
+
 
 #### 7.5 自动创建代理
 
