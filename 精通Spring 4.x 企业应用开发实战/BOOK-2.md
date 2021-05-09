@@ -1271,7 +1271,51 @@ PointcutAdvisor 实现类体系
 
 #### 7.5 自动创建代理
 
++ 手动配置代理：通过 ProxyFactoryBean 创建织入切面的代理，对目标类 Bean 进行改造；
++ 自动创建代理：让容器自动生成代理，在 Spring 内部使用 BeanPostProcessor 自动完成；
+
+![自动创建代理器实现类的类继承图](./img/spring-aop-beanpostprocessor.png)
+
+自动创建代理器实现类的类继承图
+
++ 三类基于 BeanPostProcessor 的自动代理创建器的实现类，根据规则自动在容器实例化 Bean 时匹配 Bean 生成代理实例：
+    + 基于 Bean 配置名规则：允许一组特定配置名的 Bean 自动创建代理实例的代理创建器；实现类：BeanNameAutoProxyCreator；
+    + 基于 Advisor 匹配机制：会对容器中所有 Advisor 进行扫描，自动将切面应用到匹配的 Bean 中；实现类：DefaultAdvisorAutoProxyCreator；
+    + 基于 Bean 中 AspectJ 注解标签：为包含 AspectJ 注解的 Bean 自动创建代理实例；实现类：AnnotationAwareAspectJAutoProxyCreator；
++ BeanNameAutoProxyCreator：
+    + 根据 bean 名称自动创建；
+    + org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator
+        + beanNames 属性：指定需要自动代理的 Bean 名称；可用 * 通配符；
+        + interceptorNames 属性：指定一个或多个增强 Bean 的名称；
+        + optimize 属性：若设置为 true，则强制使用 CGLib 动态代理技术；
+    + [BeanNameAutoProxyCreator 配置文件 Demo](./src/main/resources/aop/autoproxy/bean-name-auto-proxy.xml)
++ DefaultAdvisorAutoProxyCreator:
+    + 可扫描容器中的 Advisor，并将 Advisor 自动织入匹配的目标 Bean；
+    + org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator
+    + [DefaultAdvisorAutoProxyCreator 配置文件 Demo](./src/main/resources/aop/autoproxy/default-advisor-auto-proxy.xml)
++ AOP 无法增强疑难问题：
+    1. 从 AOP 实现机制分析：
+        + 基于 JDK 动态代理：通过接口来实现方法拦截；确保拦截的目标方法在接口中有定义；
+        + 基于 CGLib 动态代理：通过动态生成代理子类来实现方法拦截；确保拦截目标方法可被子类范围，非 final 和非私有实例方法；
+    2. 两个或多个方法本来是可以被增强，因互相调用被调用方增强失效；
+        + 解决一：通过代理类调用内部方法；
+        + 解决二：使用 AspectJ；
+
 #### 7.6 小结
+
++ AOP 底层：
+    + JDK：目标类需实现接口；
+    + CGLib：创建慢，但生成的代理对象运行性能快；适用于 singleton 的代理；
++ Spring 增强：
+    + （方法级别）
+        + 前置增强：
+        + 后置增强：
+        + 环绕增强：
+        + 异常抛出增强 ：
+    + （类级别）
+        + 引介增强：
++ 切点
++ 切面：增强 + 切点
 
 ### [8.基于 @AspectJ 和 Schema 的 AOP]()
 
