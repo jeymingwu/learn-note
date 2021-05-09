@@ -1252,8 +1252,22 @@ PointcutAdvisor 实现类体系
     + [复合切面 Demo](./src/main/java/com/example/aop/advisor/composable/GreetingComposablePointcut.java)    
 
 + 引介切面
-    + 
+    + 引介切面：引介增强的封装器；
+    + IntroductionAdvisor：引介增强
+        + 继承 Advisor；
+        + 实现 IntroductionInfo 接口（描述目标类需要实现的新接口）；
+        + 两个实现类：
+            + DefaultIntroductionAdvisor：引介切面最常用实现类；
+            + DeclareParentsAdvisor：实现使用 AspectJ 语言的 DeclareParent 注解表示的引介切面；
+    + IntroductionAdvisor 与 PointcutAdvisor 接口不同：IntroductionAdvisor 仅有一个类过滤器 ClassFilter 没有 MethodMatcher，因为引介切面的切点是类级别的；
+    + DefaultIntroductionAdvisor 三个构造方法：
+        + DefaultIntroductionAdvisor(Advice advice); 通过增强创建的引介切面，引介切面将为目标对象新增增强对象中所有接口的实现；
+        + DefaultIntroductionAdvisor(DynamicIntroductionAdvice advice, Class clazz); 通过一个增强和一个指定的接口类创建引介切面，仅为目标对象新增 clazz 接口的实现；
+        + DefaultIntroductionAdvisor(Advice advice, IntroductionInfo info); 通过一个增强和一个 IntroductionInfo 创建引介切面，目标对象需要实现由 IntroductionInfo#getInterfaces() 方法表示的接口；
 
+![引介切面的类继承关系图](./img/spring-aop-introduction-advisor.png)
+
+引介切面的类继承关系图
 
 #### 7.5 自动创建代理
 
