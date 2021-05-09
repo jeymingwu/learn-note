@@ -1215,10 +1215,44 @@ PointcutAdvisor 实现类体系
         4. 若在运行时某一个方法已通过静态切点检查，无论是否通过，那么再次执行也无需再静态切点检查；
 
 + 流程切面
+    + Spring 中流程切面由 DefaultPointcutAdvisor 和 ControlFlowPointcut 实现；
+    + 流程切点：由某个方法直接或间接发起调用其他方法；
+    + 流程切面：由某个方法直接或间接发起调用的方法都被增强；
+    + 使用步骤：
+        + 创建切点：org.springframework.aop.support.ControlFlowPointcut
+            + 指定流程切点的类;
+            + 指定流程切点的方法；
+        + 创建切面：
+            + 指定切点；
+            + 指定增强；
+        + 代理
+    + [流程切面 Demo 配置文件](./src/main/resources/aop/flow-control-advisor.xml)
 
 + 复合切面
+    + 复合切点：一个切点难以描述目标连接点的信息，可用多个切点描述；
+    + 复合切面：由复合切点组成的切面；
+    + Spring 提供 ComposablePointcut 可将多个切点组合，通过切点的复合运算表示；
+    + ComposablePointcut：实现了 Pointcut 接口；
+        + 构造函数：
+            + ComposablePointcut：构造一个匹配所有类所有方法的复合切点；
+            + ComposablePointcut(ClassFilter classFilter)：构造一个匹配特定类所有方法的复合切点；
+            + ComposablePointcut(MethodMatcher methodMatcher)：构造一个匹配所有类特定方法的复合切点；
+            + ComposablePointcut(ClassFilter classFilter, MethodMatcher methodMatcher)：构造一个匹配特定类特定方法的复合切点；
+        + 交集运算方法：（结果都得到一个复合切点）
+            + intersection(ClassFilter)：将复合切点和一个 ClassFilter 对象进行交集运算；
+            + instersection(MethodMatcher)：将复合切点和一个 MethodMatcher 对象进行交集运算；
+            + instersection(Pointcut)：将复合切点和一个切点对象进行交集运算；
+        + 并集运算方法：(结果都得到一个复合切点)
+            + union(ClassFilter)
+            + union(MethodMatcher)
+            + union(Pointcut)
+    + ComposablePointcut 无直接对两个切点进行交并集运算的方法；如需可使用 org.springframework.aop.support.Pointcuts 工具类；
+        + Pointcut intersection(Pointcut a, Pointcut b); 两切点交集运算，返回一个复合切点 ComposablePointcut；
+        + Pointcut union(Pointcut a, Pointcut b); 两切点并集运算，返回一个复合切点 ComposablePointcut；
+    + [复合切面 Demo](./src/main/java/com/example/aop/advisor/composable/GreetingComposablePointcut.java)    
 
 + 引介切面
+    + 
 
 
 #### 7.5 自动创建代理
