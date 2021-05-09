@@ -1,5 +1,6 @@
 package com.example.aop.advisor.staticmethodmatcher;
 
+import com.example.aop.advisor.Waiter;
 import org.springframework.aop.ClassFilter;
 import org.springframework.aop.support.StaticMethodMatcherPointcutAdvisor;
 
@@ -35,7 +36,7 @@ public class GreetingAdvisor extends StaticMethodMatcherPointcutAdvisor {
         return new ClassFilter() {
             @Override
             public boolean matches(Class<?> aClass) {
-                return com.example.aop.advisor.staticmethodmatcher.Waiter.class.isAssignableFrom(aClass);
+                return Waiter.class.isAssignableFrom(aClass);
             }
         };
     }

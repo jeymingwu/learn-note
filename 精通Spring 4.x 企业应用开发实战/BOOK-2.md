@@ -1184,13 +1184,35 @@ PointcutAdvisor 实现类体系
     + StaticMethodMatcherPointcutAdvisor：代表静态方法匹配切面；
     + StaticMethodMatcherPointcut：定义切点；
     + 通过类过滤和方法名来匹配所定义的切点；
-    + [静态普通方法匹配器切点定义切面 Demo](src/main/java/com/example/aop/advisor/regexpmethod/methodmatcher/GreetingAdvisor.java)
+    + [静态普通方法匹配器切点定义切面 Demo](./src/main/java/com/example/aop/advisor/staticmethodmatcher/GreetingAdvisor.java)
 + 静态正则表达式方法匹配切面
     + 普通方法名定义切点：不够灵活；
     + 正则表达式定义切点：解决灵活问题；如目标类有多个方法，仅需满足一定的命名规则就可匹配；
     + RegexpMethodPointcutAdvisor：正则表达式方法匹配的切面实现类；（功能齐全，无需自定义，仅需配置就可用）
+    + [静态正则表达式方法匹配切面 Demo](./src/main/java/com/example/aop/advisor/regexpmethod/RegexpMethodMatcherPointcutAdvisorDemo.java)
+    + 正则表达式示例：
+        + ```.*set.*```：表示所有类中以 set 为前缀的方法；
+        + ```com.\example\.advisor\..*```：表示 com.example.advisor 包下所有类的所有方法； 
+        + ```com\.example\.service\..*Service\..*```：匹配 com.example.service 包下所有类名以 Service 结尾的类的所有方法；
+        + ```com\.example\.service\..*Service\.save.```：匹配 com.example.service 包下且以 Service 为后缀的类中以 save 为前缀的方法；
     
+![正则表达式语法](./img/regexp-expression.png)
+
+正则表达式基本语法
+
 + 动态切面
+    + Spring 提供 DynamicMethodMatcherPointcutAdvisor 抽象类用于创建动态切面；因功能重叠在 Spring 2.0 中已过期；
+    + 现用 DefaultPointcutAdvisor 和 DynamicMethodMatcherPointcut 来完成；
+    + DynamicMethodMatcherPointer：抽象类；isRuntime() 方法标记为 final 且返回值为 true，那么其子类一定为一个动态切点；该类默认匹配所有类和方法，需通过扩展该类自定义动态切点；
+    + [动态切面 Demo](./src/main/java/com/example/aop/advisor/dynamicmethodmatcher/GreetingDynamicPointcut.java)
+        + Demo 既有静态切点检查方法，又有动态切点检查方法；
+        + 动态切点检查会对性能造成很大影响，应当尽量避免运行时每次都对目标类的各个方法进行动态检查；
+        + 所以：在动态切点类中定义静态切点检查的方法可以避免不必要的动态检查操作；
+    + Spring 动态检查机制：
+        1. 创建代理时对目标类的每个连接点使用静态切点检查；
+        2. 若通过静态切点检查不匹配，则运行时不再进行动态检查；
+        3. 若静态切点检查匹配，则运行时才进行动态切点检查；
+        4. 若在运行时某一个方法已通过静态切点检查，无论是否通过，那么再次执行也无需再静态切点检查；
 
 + 流程切面
 
