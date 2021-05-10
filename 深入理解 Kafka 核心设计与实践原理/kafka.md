@@ -16,7 +16,7 @@
     +  Broker ： 负责将接收到的消息存储到磁盘中；
     +  Consumer ： 负责从 Broker 订阅并消费信息；
     
-![Kafka 体系结构](./src/main/resources/kafka/architecture.png)
+![Kafka 体系结构](./img/architecture.png)
 
 Kafka 体系结构
 
@@ -24,7 +24,6 @@ Kafka 体系结构
     +  Producer ： 生产者，发送消息的一方；负责创建消息，然后将其投到 Kafka 中；
     +  Consumer ： 消费者，接收消息的一方；连接到 Kafka 上并接收消息，进而进行相应的业务逻辑处理；
     +  Broker ： 服务代理节点；可简单看作一个独立的 Kafka 服务节点 或 Kafka 服务实例；
-    
     +  Topic ： 主题
         +  消息以主题为单位进行归类；
         +  生产者负责将消息发送到特定的主题（发送到 Kafka 的每条消息均需指定一个主题）；
@@ -59,9 +58,9 @@ Kafka 体系结构
             +  正常情况下：所有 follower 副本均应该与 leader 副本保持一定程度的同步；——> AR = ISR，OSR 为空
             +  HW(High Watermark)： 高水位，标识一个特定的消息偏移量（offset），消费者只能拉取到这个 offset 之前的消息;
             +  LEO(Log End Offset)： 标识当前日志文件中下一条待写入消息的 offset；
-            
     +  Kafka 消费端的容灾能力：Consumer 使用拉（pull）模式用服务器拉取消息，并且保存消费的具体位置；若消费者宕机后恢复上线时可根据之前保存的消费位置重新拉取需要的消息进行消费；
-![Kafka 多副本架构](./src/main/resources/kafka/multiple-copy-mechanism.png)
+    
+![Kafka 多副本架构](./img/multiple-copy-mechanism.png)
 
 Kafka 多副本架构
     
@@ -71,7 +70,7 @@ Kafka 多副本架构
     +  生产者和消费者只与 leader 副本进行交互， 而follower 副本只负责消息的同步；（很多情况下，follower 副本中的消息相对 leader 副本有一定程度的滞后）
         +  滞后范围可通过参数进行配置；
         
-![分区中各种偏移量的说明](./src/main/resources/kafka/partition-offset.png)
+![分区中各种偏移量的说明](./img/partition-offset.png)
 
 分区中各种偏移量的说明
 
@@ -126,7 +125,7 @@ bin/kafka-console-producer.sh --broker-list localhost:9092 --topic topic-demo
 // --topic ： 发送消息的主题
 ```
 
-![kafka 的实用脚本工具](./src/main/resources/kafka/kafka-script.png)
+![kafka 的实用脚本工具](./img/kafka-script.png)
 
 kafka 的实用脚本工具
 
