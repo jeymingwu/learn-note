@@ -28,7 +28,7 @@
             11. 调用 DisposableBean 的 destroy() 方法
             12. 调动自定义的销毁方法
 
-![bean 的生命周期](../spring-in-action-4th/img/spring-bean-life.png)
+![bean 的生命周期](./img/spring-bean-life.png)
 
 +  bean 的生命周期说明
 1.  Spring 对 bean 进行实例化；
@@ -42,7 +42,7 @@
 9.  此时 bean 已准备就绪，可被使用，将一直驻留在应用上下文中，直至该应用上下文被销毁；
 10. 若 bean 实现了 DisposableBean 接口， Spring 调用 destroy() 接口方法；（若 bean 使用了 destroy-method 声明销毁方法，那么该方法也被调用）
 
-![Spring 体系结构](../spring-in-action-4th/img/spring-architecture.png)
+![Spring 体系结构](./img/spring-architecture.png)
 +  Spring 体系结构
     +  Spring 核心容器：Spring 最核心部分，管理 Spring 应用中 bean 的创建、配置和管理；
     +  AOP 模块：Spring 开发切面的基础，对面向切面编程提供丰富支持；
@@ -94,35 +94,35 @@
         +  Spring 会调用 Demo 的默认构造器来创建 bean；
     +  借助构造器注入初始化 bean 
         +  **强依赖**使用构造器注入；
-        +  <constructor-arg ref="" /> 或 <constructor-arg value="" /> 元素
+        +  ```<constructor-arg ref="" />``` 或 ```<constructor-arg value="" />``` 元素
         +  使用 Spring 3.0 所引入的 c-命名空间
             +  需在 XML 顶部声明其模式： xmlns:c="http://www.springframework.org/schema/c"
-            +  <bean id="" class="" c:name-ref="" />
+            +  ```<bean id="" class="" c:name-ref="" />```
                 +  c:cd-ref=""
                     +  c : 命名空间前缀
                     +  name : 构造器参数名（可直接用参数列表的位置信息：“_0”，若只有一个参数：“_”）
                     +  -ref : 注入 bean 应用
                     +  "" : 要注入 bean 的 ID
-            +  <bean id="" class="" c:_value="" />
+            +  ```<bean id="" class="" c:_value="" />```
                 +  c:_value : 为成员变量 value 赋值
                 +  c:_0 : 可使用位置信息替换参数名
                 +  c:_ : 若仅有一个参数可省略
         +  若构造器参数为集合时：(c-命名空间无法实现)
             +  可设置为null : <null />
             +  List：
-                +  基本元素：<list><value>value1</value><value>value2</value></list>
-                +  bean 引用：<list><ref bean="bean1"/><ref bean="bean2"/></list>
-            +  Set : <set></set>
+                +  基本元素：```<list><value>value1</value><value>value2</value></list>```
+                +  bean 引用：```<list><ref bean="bean1"/><ref bean="bean2"/></list>```
+            +  Set : ```<set></set>```
     +  属性注入初始化 bean
         +  **可选性依赖**使用属性注入；
-        +  <bean id="" class=""><property name="" value=""/></bean> 或 <bean id="" class=""><property name="" ref=""/></bean>
+        +  ```<bean id="" class=""><property name="" value=""/></bean> 或 <bean id="" class=""><property name="" ref=""/></bean>```
         +  p-命名空间
             +  需在 XML 顶部声明其模式： xmlns:p="http://www.springframework.org/schema/p"
             +  与 c-命名空间差不多
         +  util-命名空间
             +  需在 XML 顶部声明其模式： xmlns:util="http://www.springframework.org/schema/util"
-            +  定义：<util:list id="list"><value>value</value></util:list>
-            +  引用：<bean id="" class="" p:listName-ref="list"/>
+            +  定义：```<util:list id="list"><value>value</value></util:list>```
+            +  引用：```<bean id="" class="" p:listName-ref="list"/>```
             +  util:constant ： 引用某个类型的公有静态域，并将其暴露为 bean；
             +  util:list ： 创建一个 List 的 bean
             +  util:map ： 创建一个 Map 的 bean
@@ -158,8 +158,8 @@
             +  Spring 3.1及以上可在类级别上使用；
             +  Spring 3.2及以上可在方法级别上使用；
         +  在 XML 配置文件中配置 profile
-            +  在根 <beans></beans> 元素中添加 profile=""
-            +  在根 <beans></beans> 元素中嵌套 <beans profile=""></beans>
+            +  在根 ```<beans></beans>``` 元素中添加 profile=""
+            +  在根 ```<beans></beans>``` 元素中嵌套 <beans profile=""></beans>
     +  激活 profile
         +  spring.profiles.active ： 若设置该属性，那么该值为激活的 profile；
         +  spring.profiles.default ： 若 spring.profiles.active 没有设置，则该值为激活的 profile；
@@ -175,7 +175,7 @@
         +  @ActiveProfiles 注解
         +  Spring 4.0 的 @Conditional 注解
         
-![profile 作为 DispatcherServlet 的初始化参数](../spring-in-action-4th/img/spring-profile-dispatcherServlet.png)  
+![profile 作为 DispatcherServlet 的初始化参数](./img/spring-profile-dispatcherServlet.png)  
 <div style="text-align: center;">profile 作为 DispatcherServlet 的初始化参数</div>
 
 ```java
@@ -202,11 +202,11 @@ public class PersistenceTest {
             +  ResourceLoader getResourceLoader();  // 检查所加载的资源
             +  ClassLoader getClassLoader(); // 检查某类是否存在
         +  AnnotatedTypeMetadata ： 接口
-            +  boolean isAnnotated(String annotationType); // 判断带 @Bean 注解的方法是不是还有其他特定的注解；
-            +  Map<String, Object> getAnnotationAttributes(String annotationType); 
-            +  Map<String, Object> getAnnotationAttributes(String annotationType, boolean classValuesAsString); 
-            +  MultiValueMap<String, Object> getAllAnnotationAttributes(String annotationType);
-            +  MultiValueMap<String, Object> getAllAnnotationAttributes(String annotationType, boolean classValuesAsString);
+            +  ```boolean isAnnotated(String annotationType); // 判断带 @Bean 注解的方法是不是还有其他特定的注解；```
+            +  ```Map<String, Object> getAnnotationAttributes(String annotationType); ```
+            +  ```Map<String, Object> getAnnotationAttributes(String annotationType, boolean classValuesAsString); ```
+            +  ```MultiValueMap<String, Object> getAllAnnotationAttributes(String annotationType);```
+            +  ```MultiValueMap<String, Object> getAllAnnotationAttributes(String annotationType, boolean classValuesAsString);```
 
 +  处理自动化装配的歧义性
     +  自动装配 ——> 一个 bean 匹配时才有效；若多个匹配，则出现歧义性，spring 抛出 NoUniqueBeanDefinitionException 异常；
@@ -243,10 +243,10 @@ public @interface Cold {
             +  proxyMode = ScopedProxyMode.TARGET_CLASS : 代理要实现的类（使用CGLib生成基于类的代理）
     +  在 XML 中声明作用域代理
         +  要设置代理模式，需要使用 Spring aop 命名空间；
-        +  <aop:scoped-proxy />
+        +  ```<aop:scoped-proxy />```
             +  默认情况下，以 CGLib 创建目标类的代理；
-            +  指定生成基于接口的代理 ： <aop:scoped-proxy proxy-target-class="false" />
-![作用域代理能够延迟注入请求和会话作用域的 bean](../spring-in-action-4th/img/bean-scope-proxy.png)  
+            +  指定生成基于接口的代理 ： ```<aop:scoped-proxy proxy-target-class="false" />```
+![作用域代理能够延迟注入请求和会话作用域的 bean](./img/bean-scope-proxy.png)  
 <div style="text-align: center;">作用域代理能够延迟注入请求和会话作用域的 bean 的初始化参数</div>
 
 ```
@@ -264,10 +264,10 @@ public @interface Cold {
             +  注入 ： @AutoWired Environment env;
             +  检索 ： env.getProperty("demo");
                 +  getProperty() 的重载
-                    +  String getProperty(String key); 
-                    +  String getProperty(String key, String defaultValue);
-                    +  T getProperty(String key, Class < T > type); 
-                    +  T getProperty(String key, Class < T > type, T defaultValue);
+                    +  ```String getProperty(String key); ```
+                    +  ```String getProperty(String key, String defaultValue);```
+                    +  ```T getProperty(String key, Class < T > type); ```
+                    +  ```T getProperty(String key, Class < T > type, T defaultValue);```
                 +  属性必须定义：getRequiredProperty(String key); 若无定义则抛出 IllegalStateException 异常；
             +  检查是否存在 ： boolean containsProperty(String key); 
             +  将属性解析成类 ： getPropertyAsClass(String key， Class clazz);   
@@ -280,7 +280,7 @@ public @interface Cold {
                 +  使用前提：
                     +  配置 PropertyPlaceholderConfigurer 
                     +  或配置 PropertySourcePlaceholderConfigurer (Spring 3.1 以上推介使用)
-                    +  或使用 XML 配置：<context:property-placeholder />
+                    +  或使用 XML 配置：```<context:property-placeholder />```
     +  Spring 表达式语言（SpEL）
         +  Spring 3 引用
         +  特性：
@@ -295,20 +295,20 @@ public @interface Cold {
             +  #{demo.value} ：得到 ID 为 demo 的 bean，获取其 value 属性值；
         +  使用类型：访问类作用域的方法和常量：T() ——> 运算结果是 Class 对象
         +  运算符
-            +  算术运算符：+、-、*、/、%、^
-            +  比较运算符：<、>、==、<=、>=、lt、gt、eq、le、ge
-            +  逻辑运算符：and、or、not、|
+            +  算术运算符：```+、-、*、/、%、^```
+            +  比较运算符：```<、>、==、<=、>=、lt、gt、eq、le、ge```
+            +  逻辑运算符：```and、or、not、|```
             +  条件运算符
                 +  "?"
                 +  "?." ： 访问它右边的内容之前确保它对应的元素不是 null；
             +  正则表达式：matches
-                +  有效电邮例子：#{admin.email matches '[a-zA-Z0-9._% +-] +@[a-zA-Z0-9.-] +\\. com'}
+                +  有效电邮例子：```#{admin.email matches '[a-zA-Z0-9._% +-] +@[a-zA-Z0-9.-] +\\. com'}```
         +  计算集合
             +  查询运算符 ： 
-                +  (.?[]) ：查询所有匹配项
-                +  (.^[]) ：查询第一个匹配项
-                +  (.$[]) ：查询最后一个匹配项    
-            +  投影运算符 ：(.![]) 从集合中的每个成员中选择特定的属性放到另一个集合中；
+                +  ```(.?[])``` ：查询所有匹配项
+                +  ```(.^[])``` ：查询第一个匹配项
+                +  ```(.$[])``` ：查询最后一个匹配项    
+            +  投影运算符 ：```(.![])``` 从集合中的每个成员中选择特定的属性放到另一个集合中；
                      
 ### 4.面向切面
 
@@ -354,10 +354,10 @@ public @interface Cold {
         +  @annotation：限定匹配带有指定注解的连接点；
     +  切点表达式
     +  在切点中选择 bean：bean('beanID')
-![使用 AspectJ 切点表达式来选择 Performance 的 perform() 方法](../spring-in-action-4th/img/spring-aop-expression.png)  
+![使用 AspectJ 切点表达式来选择 Performance 的 perform() 方法](./img/spring-aop-expression.png)  
 使用 AspectJ 切点表达式来选择 Performance 的 perform() 方法  
 
-![使用 within() 指示器限定切点范围](../spring-in-action-4th/img/spring-aop-expression-within.png)  
+![使用 within() 指示器限定切点范围](./img/spring-aop-expression-within.png)  
 使用 within() 指示器限定切点范围 (连接关系：与&&或||非!)
     
 +  使用注解创建切面
@@ -374,7 +374,7 @@ public @interface Cold {
     +  启用切面：
         1. 启用 AspectJ 自动代理
             +  JavaConfig：@EnableAspectJAutoProxy :启用 AspectJ 自动代理；
-            +  XML：<aop:aspectj-autoproxy />
+            +  XML：```<aop:aspectj-autoproxy />```
         2. 声明切面 bean
     +  处理通知中的参数
     +  通过注解引入新功能
@@ -388,36 +388,36 @@ public interface Performance {
     void perform();
 }
 ```
-![定义切面](../spring-in-action-4th/img/aop-annotation.png)  
+![定义切面](./img/aop-annotation.png)  
 例子：定义切面
 
-![使用 @Pointcut 定义命名的切点定义切面](../spring-in-action-4th/img/aop-annotation-pointcut.png)  
+![使用 @Pointcut 定义命名的切点定义切面](./img/aop-annotation-pointcut.png)  
 例子：使用 @Pointcut 定义命名的切点定义切面
 
-![使用环绕通知重新实现切面](../spring-in-action-4th/img/aop-annotation-around.png)  
+![使用环绕通知重新实现切面](./img/aop-annotation-around.png)  
 例子：使用环绕通知重新实现切面
 
-![使用参数化的通知来记录磁道播放次数](../spring-in-action-4th/img/aop-annotation-args-example.png)  
+![使用参数化的通知来记录磁道播放次数](./img/aop-annotation-args-example.png)  
 例子：使用参数化的通知来记录磁道播放次数
 
-![在切点表达式中声明参数，将参数传入到通知方法中](../spring-in-action-4th/img/aop-annotation-args.png)  
+![在切点表达式中声明参数，将参数传入到通知方法中](./img/aop-annotation-args.png)  
 例子：在切点表达式中声明参数，将参数传入到通知方法中
 
 +  在 XML 中声明切面
     +  Spring AOP 配置元素能够以非入侵的方式声明切面
-        +  <aop:advisor />：定义 AOP 通知器
-        +  <aop:after />：定义 AOP 后置通知
-        +  <aop:after-returning />：定义 AOP 返回通知
-        +  <aop:after-throwing />：定义 AOP 异常通知
-        +  <aop:around />：定义 AOP 环绕通知
-        +  <aop:aspect />：定义一个切面
-        +  <aop:aspectj-autoproxy />：启用 @AspectJ 注解驱动的切面
-        +  <aop:before />：定义 AOP 前置通知
-        +  <aop:config />：顶层 AOP 配置元素
-        +  <aop:declare-parents />：以透明的方式为被通知的对象引入额外的接口
-        +  <aop:pointcut />：定义一个切点
+        +  ```<aop:advisor />```：定义 AOP 通知器
+        +  ```<aop:after />```：定义 AOP 后置通知
+        +  ```<aop:after-returning />```：定义 AOP 返回通知
+        +  ```<aop:after-throwing />```：定义 AOP 异常通知
+        +  ```<aop:around />```：定义 AOP 环绕通知
+        +  ```<aop:aspect />```：定义一个切面
+        +  ```<aop:aspectj-autoproxy />```：启用 @AspectJ 注解驱动的切面
+        +  ```<aop:before />```：定义 AOP 前置通知
+        +  ```<aop:config />```：顶层 AOP 配置元素
+        +  ```<aop:declare-parents />```：以透明的方式为被通知的对象引入额外的接口
+        +  ```<aop:pointcut />```：定义一个切点
    
-[Spring AOP XML配置Demo](../src/main/resources/spring/aop/SpringAopXML.xml)     
+[Spring AOP XML配置Demo](./src/main/resources/spring/aop/SpringAopXML.xml)     
 
 +  注入 AspectJ 切面
 
