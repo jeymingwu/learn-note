@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>深入浅出 MyBatis 技术原理与实战</artifactId>
+    <artifactId>mybatis-technical-principles-and-practical</artifactId>
 
 
 </project>
