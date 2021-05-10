@@ -1317,6 +1317,37 @@ PointcutAdvisor 实现类体系
 + 切点
 + 切面：增强 + 切点
 
-### [8.基于 @AspectJ 和 Schema 的 AOP]()
+### 8.基于 @AspectJ 和 Schema 的 AOP
+
+#### 8.1 新版本 Spring 对 AOP 的支持
+
+1. 新增基于 Schema 的配置支持，专门提供 AOP 命名空间；
+2. 新增对 AspectJ 切点表达式语言的支持；允许在 POJO 中定义切面；
+3. 可无缝地继承 AspectJ；
+    + Spring AOP 包括基于 XML 配置的 AOP 和基于 @AspectJ 注解的 AOP；
+    + 两者底层均采用 JDK 动态代理和 CGLib 动态代理；
+    + Spring 可集成 AspectJ，但 AspectJ 本身不属于 Spring AOP 范畴；
+    + AspectJ 了简单、直接地应用切面；
+
+#### 8.2 Java 5.0 新增注解
+
+#### 8.3 @AspectJ 初步认识
+
+#### 8.4 @AspectJ 语法基础
+
+#### 8.5 切点函数详解
+
+#### 8.6 @AspectJ 进阶
+
+#### 8.7 基于 Schema 配置切面
+
+#### 8.8 混合切面类型
+
+#### 8.9 其他相关技术
+
++ JVM Class 文件字节码转换基础知识
++ 使用 LTW 织入切面
+
+#### 8.10 总结
 
 ### [9.Spring SpEL]()
