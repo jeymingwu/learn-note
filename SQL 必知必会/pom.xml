@@ -9,7 +9,6 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>SQL 必知必会</artifactId>
-
+    <artifactId>sql-must-know</artifactId>
 
 </project>
