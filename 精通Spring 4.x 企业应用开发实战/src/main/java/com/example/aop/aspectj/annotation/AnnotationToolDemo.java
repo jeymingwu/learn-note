@@ -1,4 +1,4 @@
-package com.example.aspectj.annotation;
+package com.example.aop.aspectj.annotation;
 
 import java.lang.reflect.Method;
 

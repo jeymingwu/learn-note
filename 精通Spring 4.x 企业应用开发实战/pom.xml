@@ -9,10 +9,18 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>精通Spring 4.x 企业应用开发实战</artifactId>
+    <artifactId>Spring-4th-enterprise-application-development</artifactId>
 
     <properties>
         <spring4.version>4.3.30.RELEASE</spring4.version>
+        <file.encoding>UTF-8</file.encoding>
+        <testng.version>6.8.7</testng.version>
+        <asm.version>4.0</asm.version>
+        <cglib.version>3.0</cglib.version>
+        <aspectj.version>1.8.1</aspectj.version>
+        <aopalliance.version>1.0</aopalliance.version>
+        <commons-codec.version>1.9</commons-codec.version>
+        <slf4j.version>1.7.5</slf4j.version>
     </properties>
 
     <dependencies>
@@ -37,6 +45,48 @@
             <version>${spring4.version}</version>
         </dependency>
 
+        <!-- asm/cglib依赖（spring依赖） -->
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm</artifactId>
+            <version>${asm.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-util</artifactId>
+            <version>${asm.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+            <version>${cglib.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>asm</artifactId>
+                    <groupId>org.ow2.asm</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjrt</artifactId>
+            <version>${aspectj.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>${aspectj.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>aopalliance</groupId>
+            <artifactId>aopalliance</artifactId>
+            <version>${aopalliance.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>${commons-codec.version}</version>
+        </dependency>
     </dependencies>
 
 </project>

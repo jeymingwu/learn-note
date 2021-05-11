@@ -1374,9 +1374,42 @@ PointcutAdvisor 实现类体系
     + 若成员是数组类型，可通过 {} 赋值；
 + 访问注解：
     + 注解不会直接影响程序的运行，但第三方程序或工具可利用代码代码中的注解完成特殊任务；
-    + [访问注解 Demo](./src/main/java/com/example/aspectj/annotation/AnnotationToolDemo.java)
+    + [访问注解 Demo](./src/main/java/com/example/aop/aspectj/annotation/AnnotationToolDemo.java)
 
 #### 8.3 @AspectJ 初步认识
+
++ AspectJ 使用前准备：
+    + Java 5.0 以上版本；
+    + 需将 Spring 的 asm 模块添加到类路径中；
+    + 需在 pom.xml 文件中添加 aspectj.weaver 和 aspectj.tools 类包的依赖；
++ 简单例子：
+    + [AspectJ 定义切面](./src/main/java/com/example/aop/aspectj/PreGreetingAspectJ.java)
+        + 无需实现任何接口，仅需使用 @Aspect 注解；
+        + 在方法定义处标注了 @Before 注解 —— 表示前置增强，并提供成员值“execution(* greetTo(..))“ —— 切点表达式；
+        + 通过注解和代码，将切点、增强类型和增强的横切逻辑糅合到一个类中，是切面的定义浑然天成；
+    + [AspectJ 代理目标类](./src/main/java/com/example/aop/aspectj/AspectJProxyDemo.java)
+        + 步骤：
+            1. 设置目标对象；
+            2. 添加切面类；
+            3. 生成织入切面的代理对象；
+            4. 访问代理对象；
++ 通过配置使用 @AspectJ 切面
+    + ```<aop:aspectj-autoproxy />```：有一个 proxy-target-class 属性，默认 false，表示使用 JDK 动态代理技术增强；
+    + 在 ```<aop:aspectj-autoproxy />``` 中 Spring 内部依旧采用 AnnotationAwareAspectJAutoProxyCreator 进行自动代理创建工作；
+
+```xml
+<!--    目标 Bean-->
+<bean id="target" class="com.example.aop.advice.NaiveWaiter"/>
+<!--    使用 @Aspect 注解的切面类-->
+<bean class="com.example.aop.aspectj.PreGreetingAspectJ"/>
+<!-- 自动创建代理器，自动将 @Aspect 注解切面类织入目标 Bean 中-->
+<bean class="org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator"/>
+
+<!--    方式二-->
+<aop:aspectj-autoproxy />
+<bean id="target" class="com.example.aop.advice.NaiveWaiter"/>
+<bean class="com.example.aop.aspectj.PreGreetingAspectJ"/>
+```
 
 #### 8.4 @AspectJ 语法基础
 
