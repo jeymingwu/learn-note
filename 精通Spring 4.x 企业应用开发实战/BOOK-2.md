@@ -1413,6 +1413,46 @@ PointcutAdvisor 实现类体系
 
 #### 8.4 @AspectJ 语法基础
 
++ Spring 只支持方法的连接点 ——> Spring 仅支持部分 AspectJ 的切点语言；
++ 切点表达式函数：
+    + 关键字 + 操作参数组成：execution(* function(..))；
+        + 关键字：execution，代表目标类执行的某一个方法；
+        + * function(..)：描述目标方法的匹配模式；
+    + Spring 支持 9 个 @Aspect 切点表达式函数，根据描述对象的不同，可分四种类型：
+        + 方法切点函数：描述目标类方法的信息定义连接点；
+        + 方法入参切点函数：描述目标类方法入参的信息定义连接点；
+        + 目标类切点函数：描述目标类类型的信息定义连接点；
+        + 代理且切点函数：描述目标类的代理类的信息定义连接点；
+    + 通配符：
+        + @Aspect 支持的三种通配符：
+            + “*”：匹配任意一个字符；
+            + “..”：匹配任意字符，可多个，表示类时需和 “*” 联合使用；
+            + “+”：表示按类型匹配指定类的所有类，必须跟在类名后面；
+        + AspectJ 函数支持通配符的程度：
+            + 支持所有通配符：execution() 和 within()；
+            + 仅支持 “+” 通配符：args()、this() 和 target()；
+            + 不支持通配符：@args()、@wither()、@target()、@annotation()
+    + 逻辑运算符：
+        + ```&&```：与操作符，切点的交集运算；可用 “&amp;&amp;” 或 “and” 表示；
+        + ```||```：或操作符，切点的并集运算；可用 “or” 表示；
+        + ```!```：非操作符；切点的反集运算；可用 “not” 表示；  
+    + 增强类型：
+        + @Aspect 中各种增强类型均位于 org.aspectj.lang.annotation.* 包中；
+        + @AspectJ 的增强注解的存留期限都是 RetentionPolicy.RUNTIME，标注目标都是 ElementType.METHOD；
+        + @AspectJ 增强类型：value —— 定义切点；argNames —— 指定注解所标注增强方法的参数名；
+            + @Before：前置增强；相当于 BeforeAdvice；两个成员：value 和 argNames；
+            + @AfterReturning：后置增强；相当于 AfterReturningAdvice；四个成员：value、pointcut、returning、argNames；
+            + @Around：环绕增强；相当于 MethodInterceptor；两个成员：value、argNames；
+            + @AfterThrowing：抛出增强；相当于 ThrowsAdvice；四个成员：value、pointcut、throwing、argNames；
+            + @After：Final 增强，无论抛出异常还是正常退出，该增强均会执行；相当于 try catch 控制流；两个成员：value、argNames；
+            + @DeclareParents:引介增强；相当于 IntroductionInterceptor；两个成员：value、defaultImpl（默认的接口实现类）；
+    + 引介增强：
+        + [引介增强 Demo](./src/main/java/com/example/aop/aspectj/EnableSellerAspect.java)
+
+![AspectJ 切点函数](./img/spring-aspectj-pointcut.png)
+
+AspectJ 切点函数
+
 #### 8.5 切点函数详解
 
 #### 8.6 @AspectJ 进阶

@@ -8,15 +8,17 @@
        https://www.springframework.org/schema/aop/spring-aop.xsd">
 
 <!--方式一：-->
-<!--    目标 Bean-->
-    <bean id="target" class="com.example.aop.advice.NaiveWaiter"/>
-<!--    使用 @Aspect 注解的切面类-->
-    <bean class="com.example.aop.aspectj.PreGreetingAspectJ"/>
-<!-- 自动创建代理器，自动将 @Aspect 注解切面类织入目标 Bean 中-->
-    <bean class="org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator"/>
+<!--&lt;!&ndash;    目标 Bean&ndash;&gt;-->
+<!--    <bean id="target" class="com.example.aop.advice.NaiveWaiter"/>-->
+<!--&lt;!&ndash;    使用 @Aspect 注解的切面类&ndash;&gt;-->
+<!--    <bean class="com.example.aop.aspectj.PreGreetingAspectJ"/>-->
+<!--&lt;!&ndash; 自动创建代理器，自动将 @Aspect 注解切面类织入目标 Bean 中&ndash;&gt;-->
+<!--    <bean class="org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator"/>-->
 
 <!--    方式二-->
     <aop:aspectj-autoproxy />
     <bean id="target" class="com.example.aop.advice.NaiveWaiter"/>
     <bean class="com.example.aop.aspectj.PreGreetingAspectJ"/>
+
+    <bean class="com.example.aop.aspectj.EnableSellerAspect"/>
 </beans>
