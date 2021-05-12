@@ -1501,6 +1501,148 @@ AspectJ 切点函数
 
 #### 8.6 @AspectJ 进阶
 
++ 本节重点：
+    + 复合切点；
+    + 重用切点，对切点命名；
+    + 一个连接点匹配多个切点，注意织入顺序；
+    + 在增强中访问连接点上下文信息；
++ @Aspect 可使用切点函数定义切点，也可以使用逻辑运算符对切点进行复合运算得到复合切点；
++ 复合切点运算：通过逻辑运算符对切点进行复合运算；
+
+```java
+// 与运算：匹配 com.example 包下的类中的 function() 方法；
+@After("within(com.example.*) && execution(* function(..))")
+// 非与运算：匹配不是 com.example.Object 类中的 function() 方法；
+@Before(" !target(com.example.Object) && execution(* function(..)")
+// 或运算：匹配 com.example.Object 类或者是 com.example.Demo 类
+@AfterReturning("target(com.example.Object) || target(com.example.Demo)")
+public void function(){
+}
+```  
+
++ 切点命名：
+    + 匿名切点：直接声明在增强方法处；只能在声明处使用；
+    + 命名切点：通过 @Pointcut 注解及其切面类方法进行命名；[命名切点 Demo](./src/main/java/com/example/aop/aspectj/pointcut/TestNamePointcut.java)
+        + 切点名称：类方法；
+        + 切点的可用性：类方法的访问修饰符；
+        + 切点的引用：切点命名类.方法名；也支持复合切点；例：```@Before("Pointcut.function()")```
++ 增强织入的顺序：
+    + 若增强在同一个切面类中，则依照增强在切面类中的定义顺序进行织入；
+    + 若增强位于不同的切面类中，且切面类均实现了 org.springframework.core.Ordered 接口，则由 Ordered 接口方法顺序号决定；
+    + 若增强位于不同的切面类中，且切面类没有实现 Ordered 接口，那么织入的顺序不确定；
++ 访问连接点信息：
+    + 任何增强方法都可以通过将第一个入参声明为 JoinPoint 访问连接点上下文信息；
+    + org.aspectj.lang.JoinPoint 表示目标类连接点对象；
+        + ```Object[] getArgs();```：获取连接点方法运行时的入参列表；
+        + ```Signature getSignature();```：获取连接点的方法签名对象；
+        + ```Object[] getTarget();```：获取连接点所在目标对象；
+        + ```Object[] getThis();```：获取代理对象本身；
+    + org.aspectj.lang.ProceedingJoinPoint 表示目标类连接点对象；（环绕增强，是 JoinPoint 的子接口）
+        + ```Object process() throws Throwable;```：通过反射执行目标对象的连接点处的方法；
+        + ```Object process(Obejct[] args) throws Throwable;```：通过反射执行目标对象连接点处的方法，不过使用新的入参替换原来的入参；
++ 绑定连接点方法入参：
+    + args()：绑定连接点方法入参；
+    + @annotation()：绑定连接点方法的注解对象；
+    + @args()：绑定连接点方法入参的注解；
+
+```java
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+
+@Aspect
+public class TestAspect {
+
+    //------------绑定连接点参数----------//
+	@Before("target(com.smart.NaiveWaiter) && args(name,num,..)")
+	public void bindJoinPointParams(int num,String name){
+	   System.out.println("----bindJoinPointParams()----");
+	   System.out.println("name:"+name);
+	   System.out.println("num:"+num);
+        System.out.println("----bindJoinPointParams()----");
+	}
+}
+```    
+
++ 绑定代理对象：
+
+```java
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+
+@Aspect
+public class TestAspect {
+
+  //------------绑定代理对象----------//
+    @Before("this(waiter)")
+	public void bindProxyObj(Waiter waiter){
+	   System.out.println("----bindProxyObj()----");
+	   System.out.println(waiter.getClass().getName());
+	   System.out.println("----bindProxyObj()----");
+	}
+}
+```      
+
++ 绑定类注解对象：
+
+```java
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+
+@Aspect
+public class TestAspect {
+
+	  //------------绑定类标注对象----------//
+	@Before("@within(m)")
+	public void bindTypeAnnoObject(Monitorable m){
+	   System.out.println("----bindTypeAnnoObject()----");
+	   System.out.println(m.getClass().getName());
+	   System.out.println("----bindTypeAnnoObject()----");
+	}
+}
+```    
+
++ 绑定返回值：
+
+```java
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+
+@Aspect
+public class TestAspect {
+
+	@AfterReturning(value="target(com.smart.SmartSeller)",returning="retVal")
+	public void bingReturnValue(int retVal){
+	   System.out.println("----bingReturnValue()----");
+	   System.out.println("returnValue:"+retVal);
+	   System.out.println("----bingReturnValue()----");
+	}
+}
+```  
+
++ 绑定抛出的异常：
+
+```java
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+
+@Aspect
+public class TestAspect {
+
+//    //------------绑定抛出的异常----------//
+	@AfterThrowing(value="target(com.smart.SmartSeller)",throwing="iae")
+	public void bindException(IllegalArgumentException iae){
+	   System.out.println("----bindException()----");
+	   System.out.println("exception:"+iae.getMessage());
+	   System.out.println("----bindException()----");
+	}	
+}
+```  
+
 #### 8.7 基于 Schema 配置切面
 
 #### 8.8 混合切面类型
