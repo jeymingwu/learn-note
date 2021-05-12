@@ -1085,7 +1085,7 @@ Spring 中事件广播器类结构
                 + 接收增强 Bean 的名称而并非增强 Bean 的实例；
                 + 最好实现： ```<property name="interceptorNames"><list><idref bean="advice"/></list></property>```
                 + 便捷实现：```<property name="interceptorNames" value="advice"/>```
-            + singleton：返回的代理时候是单实例，默认单实例；
+            + singleton：返回的代理是否是单实例，默认单实例；
             + optimize：设置 true 时强制使用 CGLib 动态代理；对于 singleton 代理推介使用；
             + proxyTargetClass：是否对类进行代理；当设置 true 时使用 CGLib 动态代理；
         + [Spring 配置 AOP.xml](./src/main/resources/aop/ProxyFactoryBean.xml)
@@ -1415,9 +1415,9 @@ PointcutAdvisor 实现类体系
 
 + Spring 只支持方法的连接点 ——> Spring 仅支持部分 AspectJ 的切点语言；
 + 切点表达式函数：
-    + 关键字 + 操作参数组成：execution(* function(..))；
+    + “关键字”和“操作参数”组成：execution(* function(..))；
         + 关键字：execution，代表目标类执行的某一个方法；
-        + * function(..)：描述目标方法的匹配模式；
+        + ```* function(..)```：描述目标方法的匹配模式；
     + Spring 支持 9 个 @Aspect 切点表达式函数，根据描述对象的不同，可分四种类型：
         + 方法切点函数：描述目标类方法的信息定义连接点；
         + 方法入参切点函数：描述目标类方法入参的信息定义连接点；
@@ -1425,9 +1425,9 @@ PointcutAdvisor 实现类体系
         + 代理且切点函数：描述目标类的代理类的信息定义连接点；
     + 通配符：
         + @Aspect 支持的三种通配符：
-            + “*”：匹配任意一个字符；
-            + “..”：匹配任意字符，可多个，表示类时需和 “*” 联合使用；
-            + “+”：表示按类型匹配指定类的所有类，必须跟在类名后面；
+            + ```*```：匹配任意一个字符；
+            + ```..```：匹配任意字符，可多个，表示类时需和 “*” 联合使用；
+            + ```+```：表示按类型匹配指定类的所有类，必须跟在类名后面；
         + AspectJ 函数支持通配符的程度：
             + 支持所有通配符：execution() 和 within()；
             + 仅支持 “+” 通配符：args()、this() 和 target()；
@@ -1454,6 +1454,50 @@ PointcutAdvisor 实现类体系
 AspectJ 切点函数
 
 #### 8.5 切点函数详解
+
++ @annotation()：入参为方法注解类名，表示目标方法标注了该注解，则切点匹配；[@annotation Demo](./src/main/java/com/example/aop/aspectj/fun/annotation/TestAspect.java)
++ execution()：入参为方法匹配模式串，表示满足某一匹配模式的所有目标类方法连接点；
+    + 语法：```execution(<修饰符模式>? <返回类型模式> <方法名模式>(<参数模式>) <异常模式>?)``` （除返回类型模式、方法名模式、参数模式外，其余可选）
+    + 通过方法签名定义切点：
+        + ```execution(public * *(..))```：匹配所有目标类的 public 方法；第一个 * 代表返回类型，第二个 * 代表方法名，而 .. 代表任意入参方法；
+        + ```execution(* *To(..))```：匹配目标类所有以 To 为后缀的方法；
+    + 通过类定义切点：
+        + ```executor(* com.example.Interface.*(..))```：匹配 Interface 接口的所有方法；第一个 * 代表返回任意类型，第二个 com.example.Interface.* 代表接口中所有的方法；
+        + ```executor(* com.example.Interface+.*(..))```：匹配 Interface 接口及其所有实现类的方法；
+    + 通过类包定义切点：“.*”：表示包下所有类；“..*”：表示包、子孙包下所有类；
+        + ```executor(* com.example.*(..))```：匹配 com.example 包下所有类的所有方法；
+        + ```executor(* com.example..*(..))```：匹配 com.example 包、子孙包下所有类所有方法；
+        + ```executor(* com..*.*Dao.find*(..))```：匹配包名前缀为 com 的任何包下类名后缀为 Dao 的方法，方法名已 find 为前缀的；
+    + 通过方法入参定义切点："*"：表示任意类型的参数；".."：表示任意类型的参数且参数个数不限；
+        + ```executor(* joke(String, int))```：匹配 joke(String, int) 方法，且第一个入参是 String，第二个入参是 int；（java.lang 包下的类可直接使用类名）
+        + ```executor(* joke(String, *))```：匹配目标类中 joke() 方法，且第一个入参是 String，第二个入参可以是任意类型；
+        + ```executor(* joke(String, ..))```：匹配目标类中 joke() 方法，且第一个入参是 String，后面可有任意个入参且类型不限；
+        + ```executor(* joke(Object+))```：匹配目标类中 joke() 方法，且该方法拥有一个 Object 类型或该类子类的入参；
++ args() 与 @args()
+    + args() 函数的入参是类名，表示目标类方法的入参对象是指定的类，则切点匹配；允许在类名后使用 “+” 通配符，但无意义；
+    + @args() 函数的入参必须是注解类的类名，当方法的运行时入参对象标注了指定的注解时，则切点匹配；
+        + 注意类继承树中的问题：
+            + 若注解点高于入参类型点（注解点是入参的父类或者更高），那么该目标方法不可能匹配切单 @args(x)；
+            + 若注解点低于入参类型点，那么注解点所在类及其子孙类作为方法入参时该方法匹配切点 @args(x);
++ within()：入参为类名匹配串，表示特定域下的所有连接点；
+    + 定义的连接点：针对目标类；与 execution() 类似，但不同的是 within() 指定的连接点最小范围只能是类；
+    + 对比之下，execution() 功能更齐全，囊括了 within() 功能；
+    + 语法：```within(<类匹配模式>)```
+    + 实例：
+        + ```within(com.example.InterfacrImpl)```：匹配目标类 InterfaceImpl 所有方法；若调整为 ```within(com.example.Interface)```，因接口不能被实例化则该声明是无意义的；
+        + ```within(com.example.*)```：匹配 com.example 包中所有类，但不包括子孙包；
+        + ```within(com.example..*)```：匹配 com.example 包及子孙包中的类；
++ @within() 与 @target()
+    + 均用于注解的切点函数，入参仅支持注解类名；
+    + @target(M)：匹配任意标注了 @M 的目标类；
+    + @within(M)：匹配任意标注了 @M 的目标类及其子孙类；
+    + 特别注意：若标注 @M 注解的是一个接口，那么所有实现该接口的类并不匹配 @within(M)；（因为针对的是目标类，并非运行时引用类型）
++ target() 与 this()
+    + 两者均接受类名入参，类名可带 “+” 通配符，但无效果；
+    + target()：通过判断目标类是否按类型匹配指定类；
+        + target(M)：若目标类按类型匹配于 M，则目标类的所有方法都匹配切点；
+    + this()：通过判断代理类是否按类型匹配指定类；
+    + target() 与 this() 的区别：体现在通过引介切面产生代理对象的具体表现；
 
 #### 8.6 @AspectJ 进阶
 
