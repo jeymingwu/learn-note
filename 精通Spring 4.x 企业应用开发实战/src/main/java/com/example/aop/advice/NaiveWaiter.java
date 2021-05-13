@@ -8,11 +8,11 @@ package com.example.aop.advice;
 public class NaiveWaiter implements Waiter{
     @Override
     public void greetTo(String name) {
-        System.out.println("greet to " + name + " ...");
+        System.out.println(this.getClass().getName() + ": greet to " + name + " ...");
     }
 
     @Override
     public void serveTo(String name) {
-        System.out.println("serving to " + name + " ...");
+        System.out.println(this.getClass().getName() + ": serving to " + name + " ...");
     }
 }

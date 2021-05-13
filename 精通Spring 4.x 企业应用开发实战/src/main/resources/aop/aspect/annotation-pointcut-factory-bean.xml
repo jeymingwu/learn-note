@@ -8,7 +8,9 @@
        https://www.springframework.org/schema/aop/spring-aop.xsd">
 
     <aop:aspectj-autoproxy proxy-target-class="true"/>
-    <bean class="com.example.aop.advice.NaiveWaiter" id="naiveWaiter"/>
-    <bean id="naughtyWaiter" class="com.example.aop.aspectj.fun.annotation.NaughtyWaiter"/>
+
     <bean class="com.example.aop.aspectj.fun.annotation.TestAspect"/>
+
+    <bean class="com.example.aop.advice.NaiveWaiter" id="naiveWaiter"/>
+    <bean class="com.example.aop.aspectj.fun.annotation.NaughtyWaiter" id="naughtyWaiter" />
 </beans>

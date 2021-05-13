@@ -12,11 +12,11 @@ public class NaughtyWaiter implements Waiter {
     @NeedTest
     @Override
     public void greetTo(String name) {
-        System.out.println("NaughtyWaiter：greet to " + name + "...");
+        System.out.println(this.getClass().getName() + ": greet to " + name + "...");
     }
 
     @Override
     public void serveTo(String name) {
-        System.out.println("NaughtyWaiter：serve to " + name + "...");
+        System.out.println(this.getClass().getName() + ": serve to " + name + "...");
     }
 }

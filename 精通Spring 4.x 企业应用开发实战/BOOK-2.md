@@ -1645,7 +1645,139 @@ public class TestAspect {
 
 #### 8.7 基于 Schema 配置切面
 
++ Schema 配置方法：代替基于 @Aspect 注解声明切面的方式；
++ 一个简单的切面配置：
+    + [Schema 配置文件 Demo](./src/main/resources/aop/schema/simple-schema-factory-bean.xml)
+    + ```<aop:aspect>```：定义切面，内部可定义增强；
+    + ```<aop:config>```：配置AOP，内可定义多个切面；（一个配置文件可定义多个，每个可以采用不同的代理技术）
++ 配置命名切点：
+    + ```<aop:pointcut>```：定义切点，通过属性 id 进行命名；
+    + 引用切点：pointcut-ref；
+    + 自定义切点访问范围：（定义的位置决定访问范围）
+        + 若定义在 ```<aop:aspect>``` 标签内，则只能被其内边定义的元素访问到；
+        + 若定义在 ```<aop:config>``` 标签内，则可以被其内所有切面访问到；（保险起见放在前面）
+    + ```<aop:config>``` 标签中定义的顺序：
+        1. ```<aop:pointcut>```
+        2. ```<aop:advisor>```
+        3. ```<aop:aspect>```
+
+![config 元素的 Schema 样式定义](./img/spring-aop-schema-config.png)
+
+config 元素的 Schema 样式定义
+
++ 各种增强类型的配置：
+
+```
+//-------------------------------------
+// 后置增强 <aop:after-returning>
+<aop:config proxy-target-class="true">
+    <aop:aspect ref="adviceMethods">
+        <aop:after-returning method="afterReturning" pointcut="targer(com.example.Object)" returning="retVal" />
+    </aop:aspect>
+</aop:config>
+
+// 对应的 afterReturning 方法
+public class AdviceMethods{
+    public void afterReturning(int retVal) { // retVal 和配置文件的 returning 属性值相同
+        ……
+    }
+}
+
+//-------------------------------------
+// 环绕增强 <aop:around>
+<aop:config proxy-target-class="true">
+    <aop:aspect ref="adviceMethods">
+        <aop:around method="aroundMethod" pointcut="" />
+    </aop:aspect>
+</aop:config>
+
+// 对应的 aroundMethod 方法
+public class AdviceMethods{
+    public void aroundMethod(ProceedingJoinPoint pjp) { // 环绕增强的方法，pjp 可以访问到环绕增强的连接点信息
+        ……
+    }
+}
+
+//-------------------------------------
+// 抛出异常增强 <aop:after-throwing>
+<aop:config proxy-target-class="true">
+    <aop:aspect ref="adviceMethods">
+        <aop:after-throwing method="afterThrowingMethod" pointcut="" throwing="iae" />
+    </aop:aspect>
+</aop:config>
+
+// 对应的 afterThrowingMethod 方法
+public class AdviceMethods{
+    public void afterThrowingMethod(IllegalArgumentExample iae) {
+        ……
+    }
+}
+
+//-------------------------------------
+// Final 增强 <aop:after>
+<aop:config proxy-target-class="true">
+    <aop:aspect ref="adviceMethods">
+        <aop:after method="afterMethod" pointcut=""/>
+    </aop:aspect>
+</aop:config>
+
+// 对应的 afterThrowingMethod 方法
+public class AdviceMethods{
+    public void afterMethod() {
+        ……
+    }
+}
+
+//-------------------------------------
+// 引介增强 <aop:declare-parents>
+<aop:config proxy-target-class="true">
+    <aop:aspect ref="adviceMethods">
+        <aop:declare-parents 
+            implement-interface="xxx" <!-- 要引介实现的接口-->
+            default-impl="com.xxx.XXX" <!-- 默认的实现类 -->
+            types-matching="com.xxx.XXXX" <!-- 哪些 Bean 需要引介接口的实现 -->
+        />
+    </aop:aspect>
+</aop:config>
+
+// 对应的 afterThrowingMethod 方法
+public class AdviceMethods{
+    public void afterMethod() {
+        ……
+    }
+}
+```  
+
++ 绑定连接点信息：
+    + 基于 Schema 配置的增强方法绑定连接点信息和基于 @AspectJ 绑定的无差别；
+    + 特点：
+        1. 所有增强类型对应的方法第一个入参可声明为 JoinPoint （环绕增强：ProceedingJoinPoint）访问连接点；
+        2. ```<aop:after-returning>``` 可通过 returning 属性绑定连接点方法的返回值；
+        3. ```<aop:after-throwing>``` 可通过 throwing 属性绑定连接点方法所抛出的异常；
+        4. 所有增强类型都可以通过绑定参数的切点函数绑定连接点方法的入参；
++ Advisor 切面配置：
+    + Schema 下的 advisor：切点和增强的复合体，不过仅包含一个切点和一个增强；
+    + ```<aop:advisor advice-ref="" pointcut=""/pointcut-ref="">```
+    + advice-ref 定义的增强可实现 AOP 定义好的增强；
+
 #### 8.8 混合切面类型
+
++ 多种定义切面的方式：
+    1. 基于 @AspectJ 注解方法：JDK >= Java 5.0，优先使用；
+    2. 基于 ```<aop:aspect>``` 方式：低版本 JDK；
+    3. 基于 ```<aop:advisor>``` 方式：升级基于低版本 Spring AOP 开发版本；
+    4. 基于 Advisor 类的方式： 低版本 Spring framework；
++ 各种切面类型混合使用：
+
+![各种切面类型混合使用示例](./img/spring-aop-mix-code.png)
+
+各种切面类型混合使用示例
+
++ 各种切面类型总结
+
+![Spring AOP 总结](./img/spring-aop-all-solution.png)
+
+Spring AOP 总结
 
 #### 8.9 其他相关技术
 
