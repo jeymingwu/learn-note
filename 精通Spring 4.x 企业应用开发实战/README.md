@@ -47,20 +47,19 @@
 + [7.5 自动创建代理](./BOOK-2.md#75-自动创建代理)
 + [7.6 小结](./BOOK-2.md#76-小结)
 
-### [8.基于 @AspectJ 和 Schema 的 AOP]()
+### [8.基于 @AspectJ 和 Schema 的 AOP](./BOOK-2.md#8基于-aspectj-和-schema-的-aop)
 
-+ [8.1 新版本 Spring 对 AOP 的支持]()
-+ [8.2 Java 5.0 新增注解]()
-+ [8.3 @AspectJ 初步认识]()
-+ [8.4 @AspectJ 语法基础]()
-+ [8.5 切点函数详解]()
-+ [8.6 @AspectJ 进阶]()
-+ [8.7 基于 Schema 配置切面]()
-+ [8.8 混合切面类型]()
-+ [8.9 其他相关技术]()
++ [8.1 新版本 Spring 对 AOP 的支持](./BOOK-2.md#81-新版本-spring-对-aop-的支持)
++ [8.2 Java 5.0 新增注解](./BOOK-2.md#82-java-50-新增注解)
++ [8.3 @AspectJ 初步认识](./BOOK-2.md#83-aspectj-初步认识)
++ [8.4 @AspectJ 语法基础](./BOOK-2.md#84-aspectj-语法基础)
++ [8.5 切点函数详解](./BOOK-2.md#85-切点函数详解)
++ [8.6 @AspectJ 进阶](./BOOK-2.md#86-aspectj-进阶)
++ [8.7 基于 Schema 配置切面](./BOOK-2.md#87-基于-schema-配置切面)
++ [8.8 混合切面类型](./BOOK-2.md#88-混合切面类型)
++ [8.9 其他相关技术](./BOOK-2.md#89-其他相关技术)
     + JVM Class 文件字节码转换基础知识
     + 使用 LTW 织入切面
-+ [8.10 总结]()
 
 ### [9.Spring SpEL]()
 
