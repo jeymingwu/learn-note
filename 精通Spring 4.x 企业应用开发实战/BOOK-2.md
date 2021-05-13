@@ -1789,4 +1789,37 @@ todo
 
 todo
 
-### [9.Spring SpEL]()
+### 9.Spring SpEL
+
++ SpEL：
+    + Spring 动态表达式语言；
+    + 支持运行时查询和操作对象图的动态语言；
+    + 类似 EL 表达式；
+
+#### 9.1 JVM 动态语言
+
++ 静态语言：无法直接进行表达式语言的动态解析；保障安全、性能，但牺牲了灵活性；
+    + Java：强类型静态语言，所有代码在运行时都经过严格类型检查并编译成 JVM 字节码；
++ 动态语言：可在程序运行时改变程序结构或变量类型；动态、简单、灵活；无需编译，即可被解析执行；
+    + Ruby
+    + Python
+    + JavaScript
++ 因业务发展，Java 有时也需要引用动态语言的特性弥补不足，特别解决商业系统中动态规划的解析需求，如积分规则、各类计费、活动促销等；
+    + Java 早起版本，使用 Rhino、BeanShell、MVEL 等类库实现；
+    + Java 6.0 开始提供 JSR-223 规范的全面支持；
+        + JSR-223：规范了在 JVM 上运行的动态脚本语言与 Java 程序之间的交互方式，并内置了 Mozilla Rhino 的 JavaScript 解析引擎；
+        + [Java 运行 JavaScript 脚本 Demo](./src/main/java/com/example/spel/jvm/ScriptDemo.java)
+        + 不足：使用时需对其进行相应的封装，显得过于笨重；
+
+#### 9.2 SpEL 表达式概述
+
++ SpEL：Spring 动态语言，支持运行时查询和操作对象图的动态语言；对比其他类库，更加简洁、灵活；
+    + 特点：
+        + Spring 家族中表达式求值的基础，可不依赖 Spring 框架独立使用；
+        + 一般情况下无需动工调用 SpEL 提供的 API，可直接使用；如在配置文件中，可直接通过 “#{}” 编写 SpEL 表达式；
+    + 使用前需添加依赖：spring-expression
+    + [简单的 SpEL Demo](./src/main/java/com/example/spel/SimpleSpELDemo.java)
+
+#### 9.3 SpEL 核心接口
+#### 9.4 基础表达式
+#### 9.5 Spring 中使用 SpEL
