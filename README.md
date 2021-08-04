@@ -1,5 +1,6 @@
 # learn-note
-记录笔记
+
+## 读书笔记
 
 + [朱忠华.深入理解Kafka：核心设计与实践原理[M].电子工业出版社:北京,2019](./kafka.md)
 
@@ -14,3 +15,13 @@
 + [小马哥著. Spring Boot编程思想. 北京：电子工业出版社, 2019.03.](./SpringBoot%20编程思想)
 
 + [陈雄华，林开雄，文建国编著. 精通Spring 4.x 企业应用开发实战. 北京：电子工业出版社, 2017.01.](./精通Spring%204.x%20企业应用开发实战)
+
+## 阅读笔记
+
+> Redis
+
+1. [颠覆认知——Redis会遇到的15个「坑」，你踩过几个？-20210412](./article-note/index/redis/15-redis-traps.md)
+
+> 位运算
+
+1. [位运算位运算初认识（&、|、^、~、>>、<<）](./article-note/index/bit-operation/bit-operation-learn-210804.md)
